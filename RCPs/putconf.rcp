@@ -1,0 +1,152 @@
+#
+# putconf Recipe.
+#
+
+################################################################################
+prepare(){ # Run on local
+################################################################################
+[ ! -d ${__NODECONF} ] && echo "${__NODECONF} is not Directory. Error exit." && exit 1
+
+[ ! -d ${__WORKS}    ] && rm -rf ${__WORKS}    && mkdir ${__WORKS}
+[ ! -d ${__INFOS}    ] && rm -rf ${__INFOS}    && mkdir ${__INFOS}
+[ ! -d ${__CONFS}    ] && rm -rf ${__CONFS}    && mkdir ${__CONFS}
+[ ! -d ${__PKGS}     ] && rm -rf ${__PKGS}     && mkdir ${__PKGS}
+[ ! -d ${__BAKCONFS} ] && rm -rf ${__BAKCONFS} && mkdir ${__BAKCONFS}
+
+# Generate Archive File
+_ARCFILE=${__TMPDIR}/archive.tgz
+(cd ${__NODECONF}; tar czf - `basename ${__INFOS}`/${__TGT} `basename ${__CONFS}`/${TGT}) > ${_ARCFILE}
+# Get Target OS/Distribution Data
+. ${__INFOS}/${__TGT}/OS-DIST.txt
+
+# Check OSs
+case "${OS}" in
+freebsd) ;;
+linux)
+  case "${DIST}" in
+  centos*) ;;
+  ubuntu) ;;
+  esac
+;;
+*)
+  echo "Not Supported Platform" >&2
+  exit 1
+;;
+esac
+scp ${__SSH_OPT} -q -rp ${_ARCFILE} ${__RUSR}${__TGT}:${__TGT_SCRDIR}
+}
+
+################################################################################
+main(){ # Run on remote
+################################################################################
+
+# Preparing to work.
+cd ${__TGT_SCRDIR}
+tar xzf archive.tgz
+OS=`checkos -k | tr [:upper:] [:lower:]`
+DIST=`checkos -d | tr [:upper:] [:lower:]`
+CONFS="./confs"
+INFOS="./infos"
+
+# Main routine
+case "${OS}" in
+freebsd)
+  MD5="openssl md5"
+;;
+linux)
+  case "${DIST}" in
+  centos*)
+    MD5="openssl md5"
+    chmod 000 `basename ${CONFS}`/${__TGT}/etc/shadow
+    chmod 000 `basename ${CONFS}`/${__TGT}/etc/shadow-
+    chmod 000 `basename ${CONFS}`/${__TGT}/etc/gshadow
+    chmod 000 `basename ${CONFS}`/${__TGT}/etc/gshadow-
+  ;;
+  ubuntu)
+    MD5="openssl md5"
+  ;;
+  esac
+;;
+*)
+  echo "Not Supported Platform" >&2
+  exit 1
+;;
+esac
+
+# Check file change and copy
+cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR UID GRP GID FLG FN; do
+  SYSFILE=`sudo ${MD5} /${FN}`
+  NEWFILE=`sudo ${MD5} confs/${__TGT}/${FN}`
+  FLG=`echo ${FLG} | sed -e 's/"\(.*\)"/\1/'`
+  if [ "${SYSFILE#*= }" != "${NEWFILE#*= }" ]; then
+    echo "${FN} is changed."
+    [ ! 1 -eq ${HLN} ] && echo "/${FN}s Hardlink count is not 1. skip." && continue
+    [ "${FLG}" = "\"-\"" -o "${FLG}" = "-" -o "${FLG}" = "\"\"" ] && FLG=""
+    sudo sh -c "cat confs/${__TGT}/${FN} > /${FN}"
+    case "${OS}" in
+      freebsd)
+        PER=`echo ${PER} | sed -e 's/..\(.*\)/\1/'`
+        sudo chmod ${PER} /${FN}
+        sudo chown ${UID}:${GID} /${FN}
+        if [ ! -z ${FLG} ]; then
+          sudo chflags ${FLG} /${FN}
+        fi
+        case "${FN}" in
+          "etc/master.passwd" | "etc/passwd")
+            sudo /usr/sbin/pwd_mkdb /etc/master.passwd
+            sudo /usr/sbin/pwd_mkdb -p /etc/master.passwd
+          ;;
+#          "etc/aliases" | "etc/mail/aliases" | "usr/local/etc/postfix/aliases" | "etc/aliases.db")
+          */aliases | */aliases.db)
+            echo "exec newaliases"
+            sudo newaliases
+          ;;
+        esac
+      ;;
+      linux)
+        case "${DIST}" in
+          centos*)
+            sudo chmod ${PER} /${FN}
+            sudo chown ${UID}:${GID} /${FN}
+            if [ ! -z "${FLG}" ]; then
+              if [ ! -z "`sudo which restorecon`" ]; then
+                sudo restorecon -F /${FN}
+              fi 
+            fi
+          ;;
+          ubuntu)
+            sudo chmod ${PER} /${FN}
+            sudo chown ${UID}:${GID} /${FN}
+            if [ ! -z "${FLG}" ]; then
+              if [ ! -z "`sudo which restorecon`" ]; then
+                sudo restorecon -F /${FN}
+              fi 
+            fi 
+          ;;
+        esac
+      ;;
+    esac
+  fi
+done
+}
+
+################################################################################
+afterwords(){ # Run on local
+################################################################################
+return 0
+}
+
+##############################################################################
+# putconf.rcp
+#   Usage: /bin/sh ceor.sh -u USER -h TARGET_NODE putconf.rcp
+#
+# putconf.rcp is recipe for ceor script.
+# This script use Environmental value of followings.
+#   __NODECONF  # Root node
+#   __WORKS     # Working Directory
+#   __INFOS     # Target node information data
+#   __CONFS     # Target node configuration files
+#   __BAKCONFS  # Node configuration backup files
+#   __PKGS      # Target package configuration files (symlink)
+#
+# putconf.rcp puts TARGET_NODE's configuration file from __NODECONF/...
