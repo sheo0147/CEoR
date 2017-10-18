@@ -35,32 +35,30 @@ Followings are a list of non POSIX commands which using CEoR.
 * pkg / yum / apt : Need to use FreeBSD/CentOS/Ubuntu
 * wget / curl / openssl : should be
 
-===== 実行における仮定条件 =====
+===== Precondition =====
 
-CEoRを実行するにあたって要求されるソフトウェアを記載する。
+Below, list the software required to execute CEoR.
 
-==== 必須条件 ====
+==== MUST ====
 
-* 制御側
-  * ssh 5.6 以上(2010年8月リリース)
-  * 通常のUNIXにおけるshell scriptで一般的に利用される各種コマンド(test等)
-  * Posix Shell
-* 被制御側
-  * sshd 5.6 以上(2010年8月リリース)
-  * 通常のUNIXにおけるshell scriptで一般的に利用される各種コマンド(test等)
-  * Posix Shell
-  * 必要になる各種制御系コマンド
-    * 可能な限り対話式処理を利用しないことが望ましい
+* local node
+  * ssh 5.6 or above (2010/08 released.)
+  * POSIX Shells and commands
+* Target node
+  * sshd 5.6 or above (2010/08 released.)
+  * POSIX Shells and commands
+  * Some of the administration commands
+    * It is desirable not to use interactive processing whenever possible.
 
-==== 望ましい条件 ====
+==== SHOULD ====
 
-* 制御側から被制御側に入力なしでloginできる環境
-* 被制御側において、必要時に特権を取得することができる何らかの設定
-  * 一般にはsudoを利用することが多いが、suコマンドで代行するなども可能
+* login with no password on remote. (Recomend to use ssh RSA authentication.)
+* Elevated privilege to root with no password on remote.
+  * Generally use sudo.
 
-==== Software 構成 ====
+==== Structure of CEoR ====
 
-* Defaultの環境変数値
+* Default value (configured in ceor.conf or ceor.conf.local)
   * CEoRETC: /usr/local/etc
   * CEoRINC: /usr/local/libexec/CEoR
   * CEoRINC_LOCAL: ./.CEoR
@@ -91,55 +89,57 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
                             +- R_waf_crs
 </code>
 
-=== 参考: getconf/putconf ===
+=== Example: Strcture of getconf/putconf recipe ===
+
+You can configure in ceor.conf.local (or ceor.conf)
 
 <code>
 ${NODECONF}-+- .wrks
-            +- infos -+- node1        # ${INFOS}で設定可能
+            +- infos -+- node1          # ${INFOS}
             |         +- node2
             |
-            +- confs -+- node1        # ${CONFS}で設定可能
+            +- confs -+- node1          # ${CONFS}
             |         +- node2
             |
-            +- bakconfs -+- node1    # ${BAKCONFS}で設定可能
+            +- bakconfs -+- node1       # ${BAKCONFS}
             |            +- node2
             |
-            +- pkgs-+- etc -+- node1    # ${PKGS}で設定可能
+            +- pkgs-+- etc -+- node1    # ${PKGS}
                     |       +- node2
                     +- nginx -+- node1
                               +- node2
  </code>
 
-===== 各種のルール =====
+===== Some Rules =====
 
 ==== Configuration file ====
 
-* 設定ファイルは以下の順に読み込まれる
+* Read order of configuration.
   * ./ceor.conf.local -> ${CEoRETC/ceor.conf} -> /usr/local/etc/ceor.conf
-* 設定ファイルは、Shell script形式で記述する
-  * 例はrepository内の ceor.conf を参照
+* Write the configuration file in "Shell script" format
+  * See ceor.conf.sample or ceor.conf.local.sample
 
 ==== Module file ====
 
-* Moduleは「何らかの機能」を「Platformに依存せずに」実行させるためのものである。
-  * 実施させたい作業を抽象化したもの
-  * 例えば、Userを追加するためのadduserという機能をModuleとして実装する場合以下を考える
-    * CentOSの場合: useradd を利用。
-    * Ubuntuの場合: useradd を利用。
-    * FreeBSDの場合: adduser を利用。
-    * それぞれでOptionを設定する必要がある。(UID/GID/Groups...)
-    * これらを引数に取る必要があるので、関数呼び出し時に引数として与えてもらう
-    * checkosしてOS毎にコマンドを生成し実行する
-    * exit statusを確認し、成功の場合exit 0/失敗の場合exit 1を実行する
-* Moduleは内容がたった1行であっても、1ファイルに1 functionとして記載する
-* 関数名とモジュールファイル名は必ず一致させる
-  * 存在するモジュールがわかりやすくなるように
-* 同一のモジュール名がある場合、以下の順に読み出す
+* Module is to make "some function" execute "without depending on Platform".
+  * Module is an abstraction of the work you want to implement.
+  * For example, when implementing the function "adduser" for adding "User" as Module, consider the following
+    * on CentOS: use "useradd"
+    * on Ubuntu: use "useradd"
+    * on FreeBSD: use "adduser"
+    * Need to set some options such like UID, GID, Groups, and so on.
+    * It is necessary to pass option as an argument.
+    * OS check uses checkos.
+    * Check "exit status", and return status. 0 is Succeeded, 1 is failed.
+* Module creates one file for each module, even if the contents are only one line.
+* Always make sure that the function name and module file name match.
+  * Ensure that existing module names are easy to understand.
+* If there is the same module name, CEoR reads in the following order
   * Proj/.CEoR -> CEoRLOCINC -> CEoRGENINC
-* 函数名は原則として[a-z0-9_]+で表記する
-  * 要するにAlphabet大文字は使わない
-  * Cammel-Caseを認めるかは議論の余地がある
-* POSIX 非標準コマンドを利用する場合、Moduleのコメント部に記載すること
+* Function name should be created according to [a-z0-9_]+
+  * Do not use upper case alphabet.
+  * Now I'm considering function name by Cammel-Case.
+* If a module using not POSIX commands, comment it in the comment part of module.
 
 ==== Recipe ====
 
