@@ -1,5 +1,7 @@
 # CEoR : Command Executer on Remote 
 
+[English README is here](https://github.com/sheo0147/CEoR/blob/master/README_en.md)
+
 ## Overview 
 
 CEoR は、ssh/scp などを利用し、望んだコマンドを対象ノードで実行させるための shell script である。
