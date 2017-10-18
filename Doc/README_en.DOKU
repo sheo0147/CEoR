@@ -31,6 +31,7 @@ But CEoR uses sudo because using su has some probrems like sharing password.
 Followings are a list of non POSIX commands which using CEoR.
 * ssh / sudo : Must
 * pkg / yum / apt : Need to use FreeBSD/CentOS/Ubuntu
+* wget / curl / openssl : should be
 
 ===== 実行における仮定条件 =====
 
