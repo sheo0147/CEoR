@@ -7,9 +7,9 @@
 all: docs
 
 clean:
-	rm README.md
+	rm ../README.md
 
-docs: README.md
+docs: ../README.md
 
-README.md: ../README.DOKU
-	cat ../README.DOKU | sed -f doku2md.sed > ../README.md
+../README.md: README.DOKU
+	cat README.DOKU | sed -f doku2md.sed > ../README.md

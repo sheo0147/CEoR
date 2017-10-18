@@ -1,17 +1,32 @@
 # CEoR : Command Executer on Remote 
 
+## Overview 
+
+This document is mixed with Japanese and English
+
+CEoR is a tool written by POSIX shell script which runs procedures on remote node using ssh/scp.
+
 CEoR は、ssh/scp などを利用し、望んだコマンドを対象ノードで実行させるための shell script である。
-このscriptを利用することで、ssh接続可能な任意のノードに対し、事前に準備しておいたscriptを実行させる、事が可能になる。
-  
-## 実装の動機 
 
-2017年現在、設定の自動化ツールとしては、Chef/Ansible/Fabricが一般に知られている。
+## Motivation / 実装の動機 
 
-しかしながら、これらのツールは明示的にもしくは暗黙に、対象ノードがLinuxであることを仮定している。ツール単体はそうでなかったとしても、利用可能なライブラリーやサブモジュールがLinuxを仮定していると言える。加えて、実行環境にrubyやPythonなど、システムの配布時点で存在を仮定できないツールの利用を要求する。
+Chef/Ansible/Fablic are widely known as tools for automatically setting on remote nodes.
 
-作者の場合、FreeBSD/NetBSD, CentOS/Ubuntu/Debianを中心に様々なOSを管理することが多く、また、管理対象にPythonやRubyを導入できることを仮定できない環境にある。このような状況において、上記制限は非常に厳しいものがあり、構成の自動化を行うことに多大な困難を伴うことが多い。
+Chef/Ansible/Fablicは、設定の自動化ツールとして広く知られている。
 
-そのため、極力制御側・被制御側ともに最小限のツールで動作する管理系のシステムを実装することにした。
+These tools explicitly or implicitly assume that the target is Linux. In many case, tools are not assume it, but usable libraries or module or recipes are assumeing Linux.
+And these tools require use of tools such as ruby, python or others that can not be assumed to exist in the system at the time of system distribution.
+
+これらのツールは明示的にもしくは暗黙に、対象ノードがLinuxであることを仮定している。ツール単体はそうでなかったとしても、利用可能なライブラリーやモジュール、レシピがLinuxを仮定している。加えて、実行環境にrubyやPythonなど、システムの配布時点で存在を仮定できないツールの利用を要求する。
+
+I'm administrating FreeBSD/NetBSD, CentOS/Ubuntu or other OSs, and sometimes I cannot install ruby, python or other tools to the target nodes.
+Under these circumstances, these restrictive conditions are very strict.
+
+私の場合、FreeBSD/NetBSD, CentOS/Ubuntu等の様々なOSを管理しており、しばしば、対象ノードにPythonやRubyを導入できないことがある。このような状況において、上記制限は非常に厳しい。
+
+So I imprement CEoR. CEoR runs on POSIX shell and other POSIX commands.
+
+そのため、POSIX shellやその他POSIXに定義されているコマンドで実行できるCEoRを実装した。
 
 ## 実装における思想 
 
