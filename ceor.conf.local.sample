@@ -21,7 +21,3 @@
 : ${__PKGS:="${__NODECONF}/pkgs"}           # Target package configuration files (symlink)
 
 export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
-
-# for development
-: ${CEoRETC:="./ETC"}
-: ${CEoRGENINC:="./MODs"}
