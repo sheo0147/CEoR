@@ -1,42 +1,42 @@
-# CEoR : Command Executer on Remote 
+====== CEoR : Command Executer on Remote ======
 
-## Overview 
+===== Overview =====
 
-CEoR は、ssh/scp などを利用し、望んだコマンドを対象ノードで実行させるための shell script である。
+CEoR is a tool written by POSIX shell script which runs procedures on remote node using ssh/scp.
 
-## Motivation / 実装の動機 
+===== Motivation =====
 
-Chef/Ansible/Fablicは、設定の自動化ツールとして広く知られている。
+Chef/Ansible/Fablic are widely known as tools for automatically setting on remote nodes.
 
-これらのツールは明示的にもしくは暗黙に、対象ノードがLinuxであることを仮定している。ツール単体はそうでなかったとしても、利用可能なライブラリーやモジュール、レシピがLinuxを仮定している。加えて、実行環境にrubyやPythonなど、システムの配布時点で存在を仮定できないツールの利用を要求する。
+These tools explicitly or implicitly assume that the target is Linux. In many case, tools are not assume it, but usable libraries or module or recipes are assumeing Linux.
+And these tools require use of tools such as ruby, python or others that can not be assumed to exist in the system at the time of system distribution.
 
-私の場合、FreeBSD/NetBSD, CentOS/Ubuntu等の様々なOSを管理しており、しばしば、対象ノードにPythonやRubyを導入できないことがある。このような状況において、上記制限は非常に厳しい。
+I'm administrating FreeBSD/NetBSD, CentOS/Ubuntu or other OSs, and sometimes I cannot install ruby, python or other tools to the target nodes.
+Under these circumstances, these restrictive conditions are very strict.
 
-そのため、POSIX shellやその他POSIXに定義されているコマンドで実行できるCEoRを実装した。
+So I imprement CEoR. CEoR runs on POSIX shell and other POSIX commands.
 
-## 実装における思想 
+===== Philosophy =====
 
-CEoRは、最小限のツールで動作をさせることを目的としている。したがって、POSIX UNIXに標準搭載されているコマンドのみで動作させるのが原則である。ssh/sudoなど一部のコマンドはPOSIX UNIXの標準コマンドではないが、自動化を目標とする本ツールの実装上必要なので、採用している。
-コマンドの参照元: [[http://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html]]
+CEoR producted for the purpose of operating with minimum toolsets. Then CEoR uses only POSIX UNIX toolset.
+Actually, due to implementation circumstances, I use some tools not included in POSIX like ssh or sudo and so on.
 
-```
-多くのUNIXにおいて、sudoの代わりにsuを利用することは可能である。
-しかしながら、root権限を取得するためにsuを利用することはセキュリティ保護ポリシーに違反する可能性が高いため、sudoを利用している
-```
+* A list of posix commands: [[http://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html]]
 
-なお、現時点で仮定している非標準コマンドは以下の通りである
-* ssh / sudo : 必須
-* pkg / yum / apt : (FreeBSD|CentOS|Ubuntu)システムにおいて必要
+<note>
+On many UNIX systems, it is possible to use su instead of sudo.
+But CEoR uses sudo because using su has some probrems like sharing password.
+</note>
 
+Followings are a list of non POSIX commands which using CEoR.
+* ssh / sudo : Must
+* pkg / yum / apt : Need to use FreeBSD/CentOS/Ubuntu
 
-将来必要になると予測されている非標準コマンド
-* wget / curl / openssl
-
-## 実行における仮定条件 
+===== 実行における仮定条件 =====
 
 CEoRを実行するにあたって要求されるソフトウェアを記載する。
 
-### 必須条件 
+==== 必須条件 ====
 
 * 制御側
   * ssh 5.6 以上(2010年8月リリース)
@@ -49,20 +49,20 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
   * 必要になる各種制御系コマンド
     * 可能な限り対話式処理を利用しないことが望ましい
 
-### 望ましい条件 
+==== 望ましい条件 ====
 
 * 制御側から被制御側に入力なしでloginできる環境
 * 被制御側において、必要時に特権を取得することができる何らかの設定
   * 一般にはsudoを利用することが多いが、suコマンドで代行するなども可能
 
-### Software 構成 
+==== Software 構成 ====
 
 * Defaultの環境変数値
   * CEoRETC: /usr/local/etc
   * CEoRINC: /usr/local/libexec/CEoR
   * CEoRINC_LOCAL: ./.CEoR
     
-```
+<code>
 / -+- some/where/bin -+- ceor.sh        : Executer
    |                  +- ceorconf.sh    : System Configuration File getter/putter
    |
@@ -86,11 +86,11 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
               +- R_waf -----+- R_waf_os
                             +- R_waf_nginx
                             +- R_waf_crs
-```
+</code>
 
-#### 参考: getconf/putconf 
+=== 参考: getconf/putconf ===
 
-```
+<code>
 ${NODECONF}-+- .wrks
             +- infos -+- node1        # ${INFOS}で設定可能
             |         +- node2
@@ -105,18 +105,18 @@ ${NODECONF}-+- .wrks
                     |       +- node2
                     +- nginx -+- node1
                               +- node2
- ```
+ </code>
 
-## 各種のルール 
+===== 各種のルール =====
 
-### Configuration file 
+==== Configuration file ====
 
 * 設定ファイルは以下の順に読み込まれる
   * ./ceor.conf.local -> ${CEoRETC/ceor.conf} -> /usr/local/etc/ceor.conf
 * 設定ファイルは、Shell script形式で記述する
   * 例はrepository内の ceor.conf を参照
 
-### Module file 
+==== Module file ====
 
 * Moduleは「何らかの機能」を「Platformに依存せずに」実行させるためのものである。
   * 実施させたい作業を抽象化したもの
@@ -138,7 +138,7 @@ ${NODECONF}-+- .wrks
   * Cammel-Caseを認めるかは議論の余地がある
 * POSIX 非標準コマンドを利用する場合、Moduleのコメント部に記載すること
 
-### Recipe 
+==== Recipe ====
 
 * Recipeは、作業手順を記述したものである。
 * Recipeは、Moduleやshell scriptで実施できる制御文を組み合わせて記述する
@@ -152,7 +152,7 @@ ${NODECONF}-+- .wrks
 * 各ブロックはshell scriptにおける関数のように記述される必要がある。
   * サンプルはRCPs/concept.rcpを参照
 
-```
+<code>
 prepare(){ # localで実行される
 # exit statusが0でなければ、CEoRは停止することに注意
 }
@@ -163,9 +163,9 @@ main(){ # remoteで実行される
 afterwords(){ # localで実行される
 # exit statusにかかわりなく、最終処理を実行後CEoRが終了する
 }
-```
+</code>
 
-## 実装メモ 
+===== 実装メモ =====
 
 * CEoRを含む中心となるScriptは、「POSIXで規定されている」範囲のみで作成する
   * ShellはPOSIX Shell
@@ -191,7 +191,7 @@ afterwords(){ # localで実行される
   * 可能である限り、DEBUGコード及びTESTコードを含むこと
     * TESTコードは、(Functionname)_TESTによって括られ、その中に記載されること
 
-```
+<code>
 : ${checkos_TEST:=0}
 checkos() {
 ....
@@ -204,7 +204,7 @@ if [ ${checkos_TEST} ]; then
     echo
   done
 fi
-```
+</code>
 
   * コメントは、必要最小限にとどめる。
     * 原則英語で。それ以外の文字種を利用するならばUTF-8を利用する
@@ -214,9 +214,9 @@ fi
   * 函数から何らかの値を返したい場合、stdoutに出力すること
     * 呼び出し側は Back Quote で函数を括って呼び出し（評価し）、変数で受けること
 
-## 各種メモ 
+===== 各種メモ =====
 
-### モジュールの読み込み 
+==== モジュールの読み込み ====
 
 CEoRにおいて様々な処理はModuleと呼ばれる複数の函数群において実行される。
 現時点では、函数が少ないので、ceor内で函数を全て読み込み、展開することでレシピの実行を行えるように実装している。
@@ -227,32 +227,32 @@ CEoRにおいて様々な処理はModuleと呼ばれる複数の函数群にお�
   * ${CEoRGENERIC}/checkos と ${CEoRPRJINC}/checkos が存在した場合、実行時に生成されるファイル内に「同じ名前の函数」が「複数」定義されてしまう。エラーになるかどちらかを実行するかはshellの実装に依存するので、問題が発生することがある。
   * なお、OS-X High Sierra/FreeBSD 11.1/Ubuntu 17.04 の/bin/sh及び、CentOS7の/bin/sh(bash)場合、後から定義された函数が実行される
 
-### システム情報取得 
+==== システム情報取得 ====
 
 システムの設定ファイルの取得・書戻の際、設定ファイルのPermissionやflagなどが問題になる。
 この種の情報の扱いに関して、以下に記載する
 
-### statusの記録 
+==== statusの記録 ====
 
 各OSにおいて、対象ファイルの情報を info/node/stat.txt に記載する
 Formatは、
-```
+<code>
 Permission HardLinkCount Username UID Group GID "拡張属性" ファイル名
-```
+</code>
 とする。以下、FreeBSD 11.1の例
-```
+<code>
 100644 1 root 0 wheel 0 "uarch" etc/remote
 100644 1 root 0 wheel 0 "uarch" etc/hosts
 100644 1 root 0 wheel 0 "uarch" etc/ttys
-```
+</code>
 以下CentOS7の例
-```
+<code>
 644 1 root 0 root 0 "system_u:object_r:etc_t:s0" etc/fonts/conf.d/README
 644 1 root 0 root 0 "system_u:object_r:etc_t:s0" etc/fonts/fonts.conf
 0 1 root 0 root 0 "system_u:object_r:shadow_t:s0" etc/gshadow
-```
+</code>
 
-#### FreeBSD 
+=== FreeBSD ===
 
 * FreeBSDは、通常のFile Permissionに加えて拡張属性を持つ。
   * 詳細は man chflags を参照
@@ -260,14 +260,14 @@ Permission HardLinkCount Username UID Group GID "拡張属性" ファイル名
   * statで拡張属性を取る場合、通常10.0系はstat情報がないことに注意
   * chflagsの引数に、stat で取得した flag 情報を引き渡すことで、拡張属性の設定が可能
 
-#### CentOS 
+=== CentOS ===
 
 * CentOS7は、標準でselinux拡張属性(Security Context)がファイルに割り振られている
   * seLinuxのsecurity contextを復帰するには、restorecon を利用するのが簡易
     * chconでも実行可能
   * restorecon -F filename で強制的にシステムに記録されている標準状態に戻すことができる
 
-#### Ubuntu 
+=== Ubuntu ===
 
 * Ubuntuは標準ではseLinux関連のSecurity Contextは設定されていない
   * seLinuxに関してはCentOSと同等(と思われる)

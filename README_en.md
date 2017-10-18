@@ -2,35 +2,35 @@
 
 ## Overview 
 
-CEoR は、ssh/scp などを利用し、望んだコマンドを対象ノードで実行させるための shell script である。
+CEoR is a tool written by POSIX shell script which runs procedures on remote node using ssh/scp.
 
-## Motivation / 実装の動機 
+## Motivation 
 
-Chef/Ansible/Fablicは、設定の自動化ツールとして広く知られている。
+Chef/Ansible/Fablic are widely known as tools for automatically setting on remote nodes.
 
-これらのツールは明示的にもしくは暗黙に、対象ノードがLinuxであることを仮定している。ツール単体はそうでなかったとしても、利用可能なライブラリーやモジュール、レシピがLinuxを仮定している。加えて、実行環境にrubyやPythonなど、システムの配布時点で存在を仮定できないツールの利用を要求する。
+These tools explicitly or implicitly assume that the target is Linux. In many case, tools are not assume it, but usable libraries or module or recipes are assumeing Linux.
+And these tools require use of tools such as ruby, python or others that can not be assumed to exist in the system at the time of system distribution.
 
-私の場合、FreeBSD/NetBSD, CentOS/Ubuntu等の様々なOSを管理しており、しばしば、対象ノードにPythonやRubyを導入できないことがある。このような状況において、上記制限は非常に厳しい。
+I'm administrating FreeBSD/NetBSD, CentOS/Ubuntu or other OSs, and sometimes I cannot install ruby, python or other tools to the target nodes.
+Under these circumstances, these restrictive conditions are very strict.
 
-そのため、POSIX shellやその他POSIXに定義されているコマンドで実行できるCEoRを実装した。
+So I imprement CEoR. CEoR runs on POSIX shell and other POSIX commands.
 
-## 実装における思想 
+## Philosophy 
 
-CEoRは、最小限のツールで動作をさせることを目的としている。したがって、POSIX UNIXに標準搭載されているコマンドのみで動作させるのが原則である。ssh/sudoなど一部のコマンドはPOSIX UNIXの標準コマンドではないが、自動化を目標とする本ツールの実装上必要なので、採用している。
-コマンドの参照元: [[http://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html]]
+CEoR producted for the purpose of operating with minimum toolsets. Then CEoR uses only POSIX UNIX toolset.
+Actually, due to implementation circumstances, I use some tools not included in POSIX like ssh or sudo and so on.
+
+* A list of posix commands: [[http://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html]]
 
 ```
-多くのUNIXにおいて、sudoの代わりにsuを利用することは可能である。
-しかしながら、root権限を取得するためにsuを利用することはセキュリティ保護ポリシーに違反する可能性が高いため、sudoを利用している
+On many UNIX systems, it is possible to use su instead of sudo.
+But CEoR uses sudo because using su has some probrems like sharing password.
 ```
 
-なお、現時点で仮定している非標準コマンドは以下の通りである
-* ssh / sudo : 必須
-* pkg / yum / apt : (FreeBSD|CentOS|Ubuntu)システムにおいて必要
-
-
-将来必要になると予測されている非標準コマンド
-* wget / curl / openssl
+Followings are a list of non POSIX commands which using CEoR.
+* ssh / sudo : Must
+* pkg / yum / apt : Need to use FreeBSD/CentOS/Ubuntu
 
 ## 実行における仮定条件 
 
