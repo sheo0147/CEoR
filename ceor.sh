@@ -2,7 +2,7 @@
 #
 # Title:
 #  ceor.sh
-#  CEoR (Command Executer on Remote)
+#  CEoR (Command Executer on Remote)	version 0.1
 #
 # for /usr/bin/what:
 #  @(#) ceor.sh : Command Executer on Remote Main file
