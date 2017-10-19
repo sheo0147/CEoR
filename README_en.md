@@ -25,10 +25,8 @@ Actually, due to implementation circumstances, I use some tools not included in 
 
 * A list of posix commands: [[http://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html]]
 
-```
-On many UNIX systems, it is possible to use su instead of sudo.
-But CEoR uses sudo because using su has some probrems like sharing password.
-```
+  On many UNIX systems, it is possible to use su instead of sudo.
+  But CEoR uses sudo because using su has some probrems like sharing password.
 
 Followings are a list of non POSIX commands which using CEoR.
 * ssh / sudo : Must
