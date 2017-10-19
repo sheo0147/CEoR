@@ -155,21 +155,17 @@ export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
 
 ### Recipe 
 
-* Recipeは、作業手順を記述したものである。
-* Recipeは、Moduleやshell scriptで実施できる制御文を組み合わせて記述する
-* Recipeには、汎用的なものもSpecificなものも記述できる。
-* Recipeは以下の3つブロックから構成される
+* Recipeとは、作業手順を記述したものである
+* Recipeは以下の3つブロック(関数)で構成される
   * prepare : 事前準備。Recipeを呼び出したnode(local)で実行される
     * 必要に応じて、ファイルなどを準備し、実行先に転送しておくこともできる
   * main : 実作業。対象node(remote)で実行される
+    * mainはremoteで実行されるため、localの環境変数設定は引き継がれない
+    * 現時点で引き継がれる環境変数は`__TGT_SCRDIR`と`__TGT`の二つのみ
   * afterwords: 事後処理。localで実行される
     * 必要に応じて、mainで作成されたファイルなどを取得することもできる
 * 各ブロックはshell scriptにおける関数のように記述される必要がある。
   * サンプルはRCPs/concept.rcpを参照
-* mainはremoteで実行されるため、localの環境変数設定は引き継がれない
-  * 引き継ぐためにはceor.shの側で引き継ぐ環境変数を定義しなければならない
-  * 現時点で引き継がれる環境変数は`__TGT_SCRDIR`と`__TGT`の二つのみ
-    * 整理して書き直す必要がある
 
 ```
 prepare(){ # localで実行される
@@ -187,8 +183,6 @@ afterwords(){ # localで実行される
 ## 実装メモ 
 
 * CEoRを含む中心となるScriptは、「POSIXで規定されている」範囲のみで作成する
-  * ShellはPOSIX Shell
-  * sed/awkはPOSIX規定のものに
 * CEoRを構成するScriptには、以下の4種類がある
   * 中心となるMain Script (CEoRなど) : 以下 "MS"と記載
   * 機能モジュールとして動作するSubfunction Script (adduserなど) : 以下 "SS" と記載
