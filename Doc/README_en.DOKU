@@ -33,7 +33,8 @@ But CEoR uses sudo because using su has some probrems like sharing password.
 Followings are a list of non POSIX commands which using CEoR.
 * ssh / sudo : Must
 * pkg / yum / apt : Need to use FreeBSD/CentOS/Ubuntu
-* wget / curl / openssl : should be
+* openssl : Need to culculate Hash value
+* wget / curl : should be
 
 ===== Precondition =====
 
@@ -59,34 +60,31 @@ Below, list the software required to execute CEoR.
 ==== Structure of CEoR ====
 
 * Default value (configured in ceor.conf or ceor.conf.local)
-  * CEoRETC: /usr/local/etc
-  * CEoRINC: /usr/local/libexec/CEoR
-  * CEoRINC_LOCAL: ./.CEoR
+  * $CEoRETC: /usr/local/etc
+  * $CEoRINC: /usr/local/libexec/CEoR
+  * $CEoRINC_LOCAL: ./.CEoR
     
 <code>
-/ -+- some/where/bin -+- ceor.sh        : Executer
-   |                  +- ceorconf.sh    : System Configuration File getter/putter
+/ -+- some/where/bin -+- ceor.sh
    |
-   +- CEoRETC -+- ceor.conf
+   +- $CEoRETC -+- ceor.conf                : Generic configuration file
    |
-   +- CEoRGENINC -+- GM_checkos         : Generic function module
-   |              +- GM_package -+- GM_pkg_add
-   |              |              +- GM_pkg_update
-   |              +- GM_user -+- GM_user_add
-   |              |           +- GM_user_del
-   |              +- GM_....
+   +- $CEoRGENINC -+                        : CEoR generic modules
+   |               +- checkos
+   |               +- UserMod -+- add_user  : subModule directory
+   |               +- ....
    |
-   +- CEoRLOCINC -+- LM_nginx           : Local function module
-   |              +- LM_crs
-   |              +- LM_postfix
+   +- $CEoRLOCINC -+                        : Personal/local Module
+   |               +- nginx
+   |               +- postfix
    |
-   +- Proj_A -+- .CEoR -+- M_nginx      : Project function module
-              |         +- M_postfix
-              +- R_tmpl                 : node recipies
-              +- R_wb
-              +- R_waf -----+- R_waf_os
-                            +- R_waf_nginx
-                            +- R_waf_crs
+   +- Proj_A -+                             : Project
+              +- ceor.conf.local            : Configuration for project
+              +- .CEoR -+- A_nginx          : Project specific modules
+              |         +- A_postfix
+              +- RCPs -+                    : Recipes
+                       +- workbench
+                       +- waf
 </code>
 
 === Example: Strcture of getconf/putconf recipe ===
@@ -109,6 +107,22 @@ ${NODECONF}-+- .wrks
                     +- nginx -+- node1
                               +- node2
  </code>
+
+<code>
+# for degubbing and testing
+: ${DEBUG:=0}    # Debug Mode
+: ${MOD_TEST:=0} # Module TEST Mode
+
+: ${__NODECONF:="${HOME}/NodeConfs"}        # Root node
+
+: ${__WORKS:="${__NODECONF}/.wrks"}         # Working Directory
+: ${__INFOS:="${__NODECONF}/infos"}         # Target node information data
+: ${__CONFS:="${__NODECONF}/confs"}         # Target node configuration files
+: ${__BAKCONFS:="${__NODECONF}/bakconfs"}   # Node configuration backup files
+: ${__PKGS:="${__NODECONF}/pkgs"}           # Target package configuration files (symlink)
+
+export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
+</code>
 
 ===== Some Rules =====
 
@@ -136,7 +150,7 @@ ${NODECONF}-+- .wrks
   * Ensure that existing module names are easy to understand.
 * If there is the same module name, CEoR reads in the following order
   * Proj/.CEoR -> CEoRLOCINC -> CEoRGENINC
-* Function name should be created according to [a-z0-9_]+
+* Function name should be created according to `[a-z0-9_]+`
   * Do not use upper case alphabet.
   * Now I'm considering function name by Cammel-Case.
 * If a module using not POSIX commands, comment it in the comment part of module.
@@ -185,11 +199,11 @@ afterwords(){ # localで実行される
   * Tabは利用せず、Space(0x20)を利用したIndentを行う
     * Indentは原則 2SPC 単位とする
   * Script内で使用する変数（環境変数）は、原則として以下のようなルールとする
-    * MS内で使用する環境変数    : __[A-Z0-9_]+
-    * SS内で使用する環境変数    : _[A-Z0-9_]+
-    * RS/PS内で使用する環境変数 : [A-Za-z0-9_]+
+    * MS内で使用する環境変数    : `__[A-Z0-9_]+`
+    * SS内で使用する環境変数    : `_[A-Z0-9_]+`
+    * RS/PS内で使用する環境変数 : `[A-Za-z0-9_]+`
   * 予約された環境変数
-    * CEoRETC/CEoRINC/CEoRLOCINC/CEoRPRJINC/DEBUG/[A-Za-z0-9_]+_(TEST|DEBUG)
+    * `CEoRETC/CEoRINC/CEoRLOCINC/CEoRPRJINC/DEBUG/[A-Za-z0-9_]+_(TEST|DEBUG)`
   * 変数参照は ${VARNAME} 形式を利用する
   * 可能である限り、DEBUGコード及びTESTコードを含むこと
     * TESTコードは、(Functionname)_TESTによって括られ、その中に記載されること

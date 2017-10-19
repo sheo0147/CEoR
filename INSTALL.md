@@ -8,7 +8,7 @@ Now work in progress.
 ```
 cp ceor.conf.sample ceor.conf
 cp ceor.conf.local.sample ceor.conf.local
-echo ': ${CEoRETC:="./ETC"}' >> ceor.conf.local
+echo ': ${CEoRETC:="."}' >> ceor.conf.local
 echo ': ${CEoRGENINC:="./MODs"}' >> ceor.conf.local
 mkdir ~/NodeConfs
 ```

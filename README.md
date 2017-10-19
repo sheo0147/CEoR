@@ -31,10 +31,8 @@ CEoRは、最小限のツールで動作をさせることを目的としてい�
 なお、現時点で仮定している非標準コマンドは以下の通りである
 * ssh / sudo : 必須
 * pkg / yum / apt : (FreeBSD|CentOS|Ubuntu)システムにおいて必要
-
-
-将来必要になると予測されている非標準コマンド
-* wget / curl / openssl
+* openssl : 一部Hash計算に利用
+* wget / curl : 将来必要になる可能性がある
 
 ## 実行における仮定条件 
 
@@ -44,12 +42,10 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
 
 * 制御側
   * ssh 5.6 以上(2010年8月リリース)
-  * 通常のUNIXにおけるshell scriptで一般的に利用される各種コマンド(test等)
-  * Posix Shell
+  * POSIX Shell およびPOSIXで規定されている各種コマンド
 * 被制御側
   * sshd 5.6 以上(2010年8月リリース)
-  * 通常のUNIXにおけるshell scriptで一般的に利用される各種コマンド(test等)
-  * Posix Shell
+  * POSIX Shell およびPOSIXで規定されている各種コマンド
   * 必要になる各種制御系コマンド
     * 可能な限り対話式処理を利用しないことが望ましい
 
@@ -59,37 +55,34 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
 * 被制御側において、必要時に特権を取得することができる何らかの設定
   * 一般にはsudoを利用することが多いが、suコマンドで代行するなども可能
 
-### Software 構成 
+### CEoRの構造 
 
 * Defaultの環境変数値
-  * CEoRETC: /usr/local/etc
-  * CEoRINC: /usr/local/libexec/CEoR
-  * CEoRINC_LOCAL: ./.CEoR
+  * $CEoRETC: /usr/local/etc
+  * $CEoRINC: /usr/local/libexec/CEoR
+  * $CEoRINC_LOCAL: ./.CEoR
     
 ```
-/ -+- some/where/bin -+- ceor.sh        : Executer
-   |                  +- ceorconf.sh    : System Configuration File getter/putter
+/ -+- some/where/bin -+- ceor.sh
    |
-   +- CEoRETC -+- ceor.conf
+   +- $CEoRETC -+- ceor.conf                : 基本設定ファイル
    |
-   +- CEoRGENINC -+- GM_checkos         : Generic function module
-   |              +- GM_package -+- GM_pkg_add
-   |              |              +- GM_pkg_update
-   |              +- GM_user -+- GM_user_add
-   |              |           +- GM_user_del
-   |              +- GM_....
+   +- $CEoRGENINC -+                        : CEoRで配布しているModule
+   |               +- checkos
+   |               +- UserMod -+- add_user  : subModule directory
+   |               +- ....
    |
-   +- CEoRLOCINC -+- LM_nginx           : Local function module
-   |              +- LM_crs
-   |              +- LM_postfix
+   +- $CEoRLOCINC -+                        : 個人で作成したModule
+   |               +- nginx
+   |               +- postfix
    |
-   +- Proj_A -+- .CEoR -+- M_nginx      : Project function module
-              |         +- M_postfix
-              +- R_tmpl                 : node recipies
-              +- R_wb
-              +- R_waf -----+- R_waf_os
-                            +- R_waf_nginx
-                            +- R_waf_crs
+   +- Proj_A -+                             : プロジェクト
+              +- ceor.conf.local            : プロジェクト単位での設定ファイル
+              +- .CEoR -+- A_nginx          : プロジェクト固有のModule
+              |         +- A_postfix
+              +- RCPs -+                    : レシピ
+                       +- workbench
+                       +- waf
 ```
 
 #### 参考: getconf/putconf 
@@ -109,7 +102,25 @@ ${NODECONF}-+- .wrks
                     |       +- node2
                     +- nginx -+- node1
                               +- node2
- ```
+```
+
+Folllowings are example cero.conf.local file for getconfs.rcp/putconf.rcp.
+
+```
+# for degubbing and testing
+: ${DEBUG:=0}    # Debug Mode
+: ${MOD_TEST:=0} # Module TEST Mode
+
+: ${__NODECONF:="${HOME}/NodeConfs"}        # Root node
+
+: ${__WORKS:="${__NODECONF}/.wrks"}         # Working Directory
+: ${__INFOS:="${__NODECONF}/infos"}         # Target node information data
+: ${__CONFS:="${__NODECONF}/confs"}         # Target node configuration files
+: ${__BAKCONFS:="${__NODECONF}/bakconfs"}   # Node configuration backup files
+: ${__PKGS:="${__NODECONF}/pkgs"}           # Target package configuration files (symlink)
+
+export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
+```
 
 ## 各種のルール 
 
@@ -137,7 +148,7 @@ ${NODECONF}-+- .wrks
   * 存在するモジュールがわかりやすくなるように
 * 同一のモジュール名がある場合、以下の順に読み出す
   * Proj/.CEoR -> CEoRLOCINC -> CEoRGENINC
-* 函数名は原則として[a-z0-9_]+で表記する
+* 函数名は原則として`[a-z0-9_]+`で表記する
   * 要するにAlphabet大文字は使わない
   * Cammel-Caseを認めるかは議論の余地がある
 * POSIX 非標準コマンドを利用する場合、Moduleのコメント部に記載すること
@@ -157,7 +168,7 @@ ${NODECONF}-+- .wrks
   * サンプルはRCPs/concept.rcpを参照
 * mainはremoteで実行されるため、localの環境変数設定は引き継がれない
   * 引き継ぐためにはceor.shの側で引き継ぐ環境変数を定義しなければならない
-  * 現時点で引き継がれる環境変数は__TGT_SCRDIRと__TGTの二つのみ
+  * 現時点で引き継がれる環境変数は`__TGT_SCRDIR`と`__TGT`の二つのみ
     * 整理して書き直す必要がある
 
 ```
@@ -190,11 +201,11 @@ afterwords(){ # localで実行される
   * Tabは利用せず、Space(0x20)を利用したIndentを行う
     * Indentは原則 2SPC 単位とする
   * Script内で使用する変数（環境変数）は、原則として以下のようなルールとする
-    * MS内で使用する環境変数    : __[A-Z0-9_]+
-    * SS内で使用する環境変数    : _[A-Z0-9_]+
-    * RS/PS内で使用する環境変数 : [A-Za-z0-9_]+
+    * MS内で使用する環境変数    : `__[A-Z0-9_]+`
+    * SS内で使用する環境変数    : `_[A-Z0-9_]+`
+    * RS/PS内で使用する環境変数 : `[A-Za-z0-9_]+`
   * 予約された環境変数
-    * CEoRETC/CEoRINC/CEoRLOCINC/CEoRPRJINC/DEBUG/[A-Za-z0-9_]+_(TEST|DEBUG)
+    * `CEoRETC/CEoRINC/CEoRLOCINC/CEoRPRJINC/DEBUG/[A-Za-z0-9_]+_(TEST|DEBUG)`
   * 変数参照は ${VARNAME} 形式を利用する
   * 可能である限り、DEBUGコード及びTESTコードを含むこと
     * TESTコードは、(Functionname)_TESTによって括られ、その中に記載されること
