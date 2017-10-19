@@ -2,7 +2,9 @@
 
 [English README is here](https://github.com/sheo0147/CEoR/blob/master/README_en.md)
 
-[Installation memo is here](https://github.com/sheo0147/CEoR/blob/master/Doc/INSTALL.md)
+[インストールメモはこちら(Installation memo is here)](https://github.com/sheo0147/CEoR/blob/master/Doc/INSTALL.md)
+
+[実装に関するメモはこちら](https://github.com/sheo0147/CEoR/blob/master/Doc/README.md)
 
 ## Overview 
 

@@ -2,6 +2,8 @@
 
 [Installation memo is here](https://github.com/sheo0147/CEoR/blob/master/Doc/INSTALL.md)
 
+[Imprementation memo is here](https://github.com/sheo0147/CEoR/blob/master/Doc/README_en.md)
+
 ## Overview 
 
 CEoR is a tool written by POSIX shell script which runs procedures on remote node using ssh/scp.
