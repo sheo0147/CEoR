@@ -7,6 +7,7 @@
 # Tested on FreeBSD
 #
 # Not POSIX Commands: pw
+# Other MODs: is_exist_group
 
 #add_group_TEST=1
 #DEBUG=1
