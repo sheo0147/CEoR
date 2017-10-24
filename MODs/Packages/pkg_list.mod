@@ -14,15 +14,15 @@ pkg_list() {
   _DIST=`checkos -d | tr [:upper:] [:lower:]`
 
   case ${_OS} in
-  FreeBSD)
+  freebsd)
     pkg info -a
   ;;
-  Linux)
+  linux)
     case "${_DIST}" in
     centos*)
       sudo yum list installed
     ;;
-    utuntu)
+    ubuntu)
       sudo apt list --installed
     ;;
     esac
@@ -35,8 +35,10 @@ pkg_list() {
 
 ##### TEST CODE
 if [ ${pkg_list_TEST} ]; then
-    RET=`pkg_list`
-    echo "TEST:pkg_list: ${RET}"
-    echo
-  done
+  . ../checkos.mod
+  echo "Before"
+  RET=`pkg_list`
+  echo "TEST:pkg_list: ${RET}"
+  echo "after"
+  echo
 fi
