@@ -122,7 +122,7 @@ done
 #------------------------------------------------------------
 
 ##### Execute Scripts ########################################################
-__SSH_OPT="-o ControlMaster=auto -o ControlPath=${__TMPDIR}/ssh-${__TGT} -o ForwardX11=no"
+__SSH_OPT="-o ControlMaster=auto -o ControlPath=${__TMPDIR}/ssh-${__TGT} -o ControlPersist=10m -o ForwardX11=no"
 /usr/bin/ssh -N -f ${__SSH_OPT} ${__RUSR}${__TGT}
 export __SSH_OPT
 
