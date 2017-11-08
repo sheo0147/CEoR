@@ -1,0 +1,13 @@
+SLB="slb01b slb01g slb02b slb02g"
+WAF="waf01b waf01g"
+IPS="ips01b ips01g ips02b ips02g"
+NS="ins01b ins01g ens01b ens01g"
+MTA="mta01b mta01g mta003"
+DAP="dap01b dap01g"
+SQL="sql01b sql01g"
+NFS="nfs01"
+WEB="mweb01b mweb02b rweb01b rweb01g rweb02b rweb03b"
+#OTHER="tmpl"
+WB="wb"
+
+ALL_TARGET="${SLB} ${WAF} ${IPS} ${NS} ${MTA} ${DAP} ${SQL} ${NFS} ${WEB} ${WB}"
