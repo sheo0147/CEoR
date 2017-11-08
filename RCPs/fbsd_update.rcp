@@ -1,0 +1,15 @@
+#
+# Sample Recipe script
+#
+
+prepare(){ # Run on local
+:
+}
+
+main(){ # Run on remote
+  fbsd_update
+}
+
+afterwords(){ # Run on local
+:
+}
