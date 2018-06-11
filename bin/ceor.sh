@@ -142,6 +142,7 @@ check_file_in_path_env(){	# check file exist in ENVNAME path
     echo "check_file_in_path_env: Error: PATH Environment(${2}) is not available" 1>&2
     return 2
   fi
+  [ -e ${1} ] && echo "${1}" && return 0
   for i in ${loop}; do
     i=$(echo $i | sed 's/\/$//')
     [ -e ${i}/${1} ] && echo "${i}/${1}" && return 0
@@ -170,7 +171,6 @@ while getopts "h:u:" __FLAG; do
 done
 unset __FLAG
 shift $(( ${OPTIND} - 1 ))
-# [ ${#} -ne 1 ] && echo "ceor: Error!: Use only one Recipe." && exit 1
 __RECIPE="${@}"
 
 if [ -z "${__TGT}" -o -z "${__RECIPE}" ]; then
