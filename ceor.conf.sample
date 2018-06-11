@@ -1,24 +1,24 @@
 #
-#
-# Title:
-#  ceor.conf
-#  CEoR Default Configuration file.
+# ceor.conf:	CEoR System-wide Default Configuration.
 #
 # for /usr/bin/what:
 #  @(#)CEoR Confguration file.
 #
 
-# for Configuration
-: ${CEoRETC:="/usr/local/etc"}              # Configuration dir.
-: ${CEoRGENINC:="/usr/local/libexec/CEoR"}  # Generic subfunctions dir.
-: ${CEoRLOCINC:="${HOME}/.CEoR"}            # local subfunctions dir.
-: ${CEoRPRJINC:="./.CEoR"}                  # Project subfunctions dir.
+# PATH configuration is deduplication and concat
+[PATH]		# PATH configurations
+BIN    : /usr/local/CEoR/bin
+CONFS  : /usr/local/CEoR/etc
+MODULE : /usr/local/CEoR/MODs
+RECIPE : /usr/local/CEoR/RCPs
 
-CEoR_CONF_READ=1
+# Other configuration is overwrite
+[OTHER]		# Other configurations
+SSH    : `which ssh`
+SED    : `which sed`
+AWK    : `which awk`
+GREP   : `which grep`
+MKTRMP : `which mktemp`
 
-# some commands using in CEoR
-: ${SSH:=`which ssh`}
-: ${SED:=`which sed`}
-: ${AWK:=`which awk`}
-: ${GREP:=`which grep`}
-: ${MKTEMP:=`which mktemp`}
+[OTHER]
+SSH_CONF : ~/.ssh/config

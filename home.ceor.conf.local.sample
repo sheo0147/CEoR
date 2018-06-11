@@ -1,0 +1,21 @@
+#
+# ~/.CEoR/ceor.conf.local:	CEoR Personal Configuration.
+#
+# for /usr/bin/what:
+#  @(#)CEoR Personal Confguration file.
+#
+
+[PATH]		# PATH configurations
+Module : ~/.CEoR/MODs	# Private addtional modules
+Recipe : ~/.CEoR/RCPs	# Private addtional recipes
+
+[OTHER]		# PATH configurations but overwrite
+__NODECONF : ~/NodeConfs		# place of backup configuration data
+__WORKS    : ${__NODECONF}/.wrks	# working directory
+__INFOS    : ${__NODECONF}/infos	# target node information data
+__CONFS    : ${__NODECONF}/confs	# target node configuration files
+__BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
+__PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
+
+[OTHER]
+SSH:'/usr/local/bin/ssh'
