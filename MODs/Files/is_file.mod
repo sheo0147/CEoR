@@ -9,7 +9,7 @@
 # Not POSIX Commands:
 #
 # testing flags
-is_file_TEST=1
+# is_file_TEST=1
 # DEBUG=0
 
 is_file() {

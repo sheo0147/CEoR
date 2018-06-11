@@ -6,8 +6,8 @@
 #
 
 [PATH]		# PATH configurations
-Module : ~/.CEoR/MODs	# Private addtional modules
-Recipe : ~/.CEoR/RCPs	# Private addtional recipes
+MODULE : ~/.CEoR/MODs	# Private addtional modules
+RECIPE : ~/.CEoR/RCPs	# Private addtional recipes
 
 [OTHER]		# PATH configurations but overwrite
 __NODECONF : ~/NodeConfs		# place of backup configuration data

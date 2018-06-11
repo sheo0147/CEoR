@@ -9,8 +9,8 @@
 # Not POSIX Commands:
 #
 # testing flags
-is_dir_TEST=1
-#DEBUG=1
+# is_dir_TEST=1
+# DEBUG=1
 
 is_dir() {
   if [ -z "${1}" ]; then
