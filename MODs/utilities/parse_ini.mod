@@ -9,7 +9,7 @@
 # Not POSIX Commands:
 #
 # testing flags
-parse_ini_TEST=1
+# parse_ini_TEST=1
 # DEBUG=1
 
 parse_ini() {
