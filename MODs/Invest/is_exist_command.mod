@@ -9,7 +9,7 @@
 # Not POSIX Commands:
 #
 # testing flags
-is_exist_command_TEST=1
+# is_exist_command_TEST=1
 # DEBUG=0
 
 is_exist_command() {

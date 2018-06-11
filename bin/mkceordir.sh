@@ -24,7 +24,7 @@ if [ ${ROOT} -eq 1 ]; then
   if [ -e /usr/local/CEoR/etc/ceor.conf ]; then
     echo "/usr/local/CEoR/etc/ceor.conf is exist... skip"
   else
-    cat << "__END__" > /usr/local/CEoR/etc/ceor.conf
+    cat << '__END__' > /usr/local/CEoR/etc/ceor.conf
 #
 # ceor.conf:	CEoR System-wide Default Configuration.
 #
@@ -64,10 +64,9 @@ for i in ~/.CEoR ~/.CEoR/MODs ~/.CEoR/RCPs; do
   fi
 done
 if [ -e ~/.CEoR/ceor.conf.local ]; then
-    echo "~/.CEoR/ceor.conf.local is exist... skip"
-  else
-    cat << "__END__" > ~/.CEoR/ceor.conf.local
-cat << "__END__" > ~/.CEoR/ceor.conf.local
+  echo "~/.CEoR/ceor.conf.local is exist... skip"
+else
+  cat << '__END__' > ~/.CEoR/ceor.conf.local
 #
 # ~/.CEoR/ceor.conf.local:	CEoR Personal Configuration.
 #
@@ -90,5 +89,5 @@ __PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
 [OTHER]
 SSH:'/usr/local/bin/ssh'
 __END__
-
+fi
 ##### done.

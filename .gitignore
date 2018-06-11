@@ -1,4 +1,4 @@
-ceor.conf
-ceor.conf.local
-bin
+.CEoR
 .vscode
+home.ceor.conf.local
+proj.ceor.conf.local
