@@ -132,9 +132,6 @@ __INFOS    : ${__NODECONF}/infos	# target node information data
 __CONFS    : ${__NODECONF}/confs	# target node configuration files
 __BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
 __PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
-
-[OTHER]
-SSH_CONFIG : ./.ssh/config
 __END__
 fi
 ##### done.
