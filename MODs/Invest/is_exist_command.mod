@@ -9,7 +9,7 @@
 # Not POSIX Commands:
 #
 # testing flags
-is_exist_command_TEST=1
+# is_exist_command_TEST=1
 # DEBUG=0
 
 is_exist_command() {
@@ -35,8 +35,16 @@ is_exist_command() {
 if [ ${is_exist_command_TEST} ]; then
   is_exist_command "ls"         # exist
   echo "Exit status is ${?}"
+  is_exist_command "/bin/ls"         # exist
+  echo "Exit status is ${?}"
+  is_exist_command "/sbin/ls"         # exist
+  echo "Exit status is ${?}"
   is_exist_command "whoami"         # exist
   echo "Exit status is ${?}"
   is_exist_command "alxachdffcsda" # Maybe not exist
   echo "Exit status is ${?}"
+  cd /bin/
+  is_exist_command "./ls"         # exist
+  echo "Exit status is ${?}"
+
 fi

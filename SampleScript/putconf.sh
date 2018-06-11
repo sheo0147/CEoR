@@ -9,5 +9,5 @@ fi
 
 for i in ${_TGT} ; do
   echo "::::: ${i} :::::"
-  /bin/sh ceor.sh  -h $i -u idempotence RCPs/putconf.rcp
+  /bin/sh /usr/local/CEoR/bin/ceor.sh  -h $i -u idempotence putconf.rcp
 done

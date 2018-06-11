@@ -57,77 +57,59 @@ CEoRを実行するにあたって要求されるソフトウェアを記載す�
 
 ### CEoRの構造 
 
-* Defaultの環境変数値
-  * $CEoRETC: /usr/local/etc
-  * $CEoRINC: /usr/local/libexec/CEoR
-  * $CEoRINC_LOCAL: ./.CEoR
-    
-```
-/ -+- some/where/bin -+- ceor.sh
-   |
-   +- $CEoRETC -+- ceor.conf                : 基本設定ファイル
-   |
-   +- $CEoRGENINC -+                        : CEoRで配布しているModule
-   |               +- checkos
-   |               +- UserMod -+- add_user  : subModule directory
-   |               +- ....
-   |
-   +- $CEoRLOCINC -+                        : 個人で作成したModule
-   |               +- nginx
-   |               +- postfix
-   |
-   +- Proj_A -+                             : プロジェクト
-              +- ceor.conf.local            : プロジェクト単位での設定ファイル
-              +- .CEoR -+- A_nginx          : プロジェクト固有のModule
-              |         +- A_postfix
-              +- RCPs -+                    : レシピ
-                       +- workbench
-                       +- waf
-```
+CEoRはshell scriptなので、その処理のほとんどを環境変数に頼る形で実装している。
 
-#### 参考: getconf/putconf 
+CEoRには、複数のPATHを記載するためのPATH型変数と、固定の値を持つ固有値型変数がある。
+
+* 標準で定義されるPATH型変数
+  * $BIN:    /usr/local/CEoR/bin
+  * $CONFS:  /usr/local/CEoR/etc
+  * $MODULE: ./.CEoR/MODs ~/.CEoR/MODs /usr/local/CEoR/MODs
+  * $RECIPE: ./.CEoR/RCPs ~/.CEoR/RCPs /usr/local/CEoR/RCPs
+
+これらの変数は、複数のPATHを space(0x20)で区切って定義する。
+評価は先頭から行われる。したがって、
+  * ./CEoR/RCPs/foo.rcp
+  * /usr/local/CEoR/RCPs/foo.rcp
+が存在する場合には、./CEoR/RCPs/foo.rcpが選択される。
 
 ```
-${NODECONF}-+- .wrks
-            +- infos -+- node1        # ${INFOS}で設定可能
-            |         +- node2
+/ -+- /usr/local/CEoR -+- bin ---- ceor.sh
+   |                   +- etc ---- ceor.conf : 基本設定ファイル
+   |                   +- MODs -+
+   |                   |        +- ....      : CEoRで配布しているModule
+   |                   |
+   |                   +- RCPs -+
+   |                            +- ....      : CEoRで配布しているRecipe
+   +- ~/.CEoR -+
+   |           +- MODs -+
+   |           |        +- ....              : 個人で作成したModule
+   |           |
+   |           +- RCPs -+
+   |           |        +- ....              : 個人で作成したRecipe
+   |
+   +- Proj -+                                : プロジェクト
+            +- .CEoR -+
+            |         +- ceor.conf.local     : プロジェクト単位での設定ファイル
+            +- MODs -+
+            |        +- ....                 : プロジェクト単位で作成したModule
             |
-            +- confs -+- node1        # ${CONFS}で設定可能
-            |         +- node2
-            |
-            +- bakconfs -+- node1    # ${BAKCONFS}で設定可能
-            |            +- node2
-            |
-            +- pkgs-+- etc -+- node1    # ${PKGS}で設定可能
-                    |       +- node2
-                    +- nginx -+- node1
-                              +- node2
+            +- RCPs -+
+            |        +- ....                 : プロジェクト単位で作成したRecipe
 ```
 
-Folllowings are example cero.conf.local file for getconfs.rcp/putconf.rcp.
-
-```
-# for degubbing and testing
-: ${DEBUG:=0}    # Debug Mode
-: ${MOD_TEST:=0} # Module TEST Mode
-
-: ${__NODECONF:="${HOME}/NodeConfs"}        # Root node
-
-: ${__WORKS:="${__NODECONF}/.wrks"}         # Working Directory
-: ${__INFOS:="${__NODECONF}/infos"}         # Target node information data
-: ${__CONFS:="${__NODECONF}/confs"}         # Target node configuration files
-: ${__BAKCONFS:="${__NODECONF}/bakconfs"}   # Node configuration backup files
-: ${__PKGS:="${__NODECONF}/pkgs"}           # Target package configuration files (symlink)
-
-export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
-```
-
+* 標準で定義される固有値型変数
+  * $SSH:    System内で標準的に読み出される ssh コマンド (/usr/bin/ssh)
+  * $SED:    System内で標準的に読み出される sed コマンド (/usr/bin/sed)
+  * その他変数定義は、/usr/local/CEoR/etc/ceor.confを参照のこと
+  * 固有値変数定義の優先順位は、Proj/.CEoR/ceor.conf.local, ~/.CEoR/ceor.conf.local, /usr/local/CEoR/etc/ceor.conf となる。したがって、以下のように設定した場合、SSH="./bin/ssh" となる。
+    * /usr/local/CEoR/etc/ceor.confで SSH=`which ssh`
+    * ./CEoR/ceor.conf.localでSSH="./bin/ssh"
+  
 ## 各種のルール 
 
 ### Configuration file 
 
-* 設定ファイルは以下の順に読み込まれる
-  * ./ceor.conf.local -> ${CEoRETC/ceor.conf} -> /usr/local/etc/ceor.conf
 * 設定ファイルは、Shell script形式で記述する
   * 例はrepository内の ceor.conf を参照
 
