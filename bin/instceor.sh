@@ -8,7 +8,7 @@
 #
 ##############################################################################
 
-[ ! ${UID} -eq 0 ] && echo "Error: Need root permission." && exit 1
+[ "${USER}" != "root" ] && echo "Error: Need root permission." && exit 1
 
 echo "Install CEoR to /usr/local/CEoR"
 for i in /usr/local/CEoR /usr/local/CEoR/bin /usr/local/CEoR/etc /usr/local/CEoR/MODs /usr/local/CEoR/RCPs; do

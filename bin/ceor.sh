@@ -214,6 +214,7 @@ done
 
 ##### Execute Scripts ########################################################
 __SSH_OPT="-o ControlMaster=auto -o ControlPath=${__TMPDIR}/ssh-${__TGT} -o ControlPersist=10m -o ForwardX11=no"
+[ ! -z "${SSH_CONFIG}" ] && [ -e "${SSH_CONFIG}" ] && __SSH_OPT="-F ${SSH_CONFIG} ${__SSH_OPT}"
 /usr/bin/ssh -N -f ${__SSH_OPT} ${__RUSR}${__TGT}
 __EXPORT_ENV_NAME="${__EXPORT_ENV_NAME} __SSH_OPT"
 eval "export ${__EXPORT_ENV_NAME}"
