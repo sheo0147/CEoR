@@ -11,7 +11,9 @@
 ROOT=0
 [ ${UID} -eq 0 ] && ROOT=1
 
+##############################################################################
 ##### create /usr/local/CEoR (if UID=0)
+##############################################################################
 if [ ${ROOT} -eq 1 ]; then
   echo "Create /usr/local/CEoR and some directories, system wide configuration file."
   for i in /usr/local/CEoR /usr/local/CEoR/bin /usr/local/CEoR/etc /usr/local/CEoR/MODs /usr/local/CEoR/RCPs; do
@@ -54,7 +56,9 @@ __END__
   fi
 fi
 
+##############################################################################
 ##### Create ~/.CEoR
+##############################################################################
 echo "Create ~/.CEoR and some directories, personal configuration file."
 for i in ~/.CEoR ~/.CEoR/MODs ~/.CEoR/RCPs; do
   if [ -e ${i} ]; then
@@ -88,6 +92,49 @@ __PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
 
 [OTHER]
 SSH:'/usr/local/bin/ssh'
+__END__
+fi
+
+##############################################################################
+##### Create ./.CEoR
+##############################################################################
+echo "Create ./.CEoR and some directories, project configuration file."
+for i in ./.CEoR ./.CEoR/MODs ./.CEoR/RCPs; do
+  if [ -e ${i} ]; then
+    echo "${i} is exist... skip"
+  else
+    mkdir $i
+  fi
+done
+if [ -e ./.CEoR/ceor.conf.local ]; then
+  echo "./.CEoR/ceor.conf.local is exist... skip"
+else
+  cat << '__END__' > ./.CEoR/ceor.conf.local
+#
+# ./ceor.conf.local:	CEoR Per Project Configuration.
+#
+# for /usr/bin/what:
+#  @(#)CEoR Local Confguration file.
+#
+
+[PATH]		# PATH configurations
+MODULE : ./CEoR/MODs:./MODs		# Prj addtional modules
+RECIPE : ./CEoR/RCPs:./RCPs		# Prj addtional recipes
+
+[OTHER]		# Other configurations.
+DEBUG    : 0				# for DEBUG
+MOD_TEST : 0				# for Module test mode
+
+[OTHER]		# PATH configurations but overwrites
+__NODECONF : ./NodeConfs		# place of backup configuration data
+__WORKS    : ${__NODECONF}/.wrks	# working directory
+__INFOS    : ${__NODECONF}/infos	# target node information data
+__CONFS    : ${__NODECONF}/confs	# target node configuration files
+__BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
+__PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
+
+[OTHER]
+SSH_CONFIG : ./.ssh/config
 __END__
 fi
 ##### done.
