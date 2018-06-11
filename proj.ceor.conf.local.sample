@@ -1,0 +1,25 @@
+#
+# ./ceor.conf.local:	CEoR Per Project Configuration.
+#
+# for /usr/bin/what:
+#  @(#)CEoR Local Confguration file.
+#
+
+[PATH]		# PATH configurations
+Module : ./CEoR/MODs:./MODs		# Prj addtional modules
+Recipe : ./CEoR/RCPs:./RCPs		# Prj addtional recipes
+
+[OTHER]		# Other configurations.
+DEBUG    : 0				# for DEBUG
+MOD_TEST : 0				# for Module test mode
+
+[OTHER]		# PATH configurations but overwrites
+__NODECONF : ./NodeConfs		# place of backup configuration data
+__WORKS    : ${__NODECONF}/.wrks	# working directory
+__INFOS    : ${__NODECONF}/infos	# target node information data
+__CONFS    : ${__NODECONF}/confs	# target node configuration files
+__BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
+__PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
+
+[OTHER]
+SSH_CONFIG : ./.ssh/config
