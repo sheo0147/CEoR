@@ -205,7 +205,7 @@ __END__
 
 for __i in ${MODULE}; do
   if [ -d ${__i} ]; then
-    for __j in $(find ${__i} -type f); do
+    for __j in $(find ${__i} -type f -name '*.mod'); do
       echo "##### from ${__j}" >> ${__TMPDIR}/module.sh
       cat ${__j} | sed -e '/^[     ]*#/d' >> ${__TMPDIR}/module.sh
     done
