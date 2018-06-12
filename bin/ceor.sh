@@ -51,7 +51,7 @@ parse_conf() {			# parse configuration files.
   local i j					# loop counter
 
   # Read configuration file and normalize Variables_name and Values.
-  for i in ${@}; do
+  for i in ${*}; do
     if [ ! -r "${i}/${__CONFFILE}" ]; then
        echo "Warning: ${i}/${__CONFFILE} is not found"
        continue
@@ -83,7 +83,7 @@ parse_conf() {			# parse configuration files.
         __CONFENV_O="${__CONFENV_O} ${E}"
       fi
     done < "${i}/${__CONFFILE}"
-    S=$(expr ${S} + 1)
+    S=$(( ${S} + 1 ))
     M=""
   done
 
@@ -97,7 +97,7 @@ parse_conf() {			# parse configuration files.
     while [ ${j} -ne ${S} ]; do
       T="${T}:$(eval echo '${'$(eval echo ${i}_${j})'}')"
       unset "$(eval echo ${i}_${j})"
-      j=$(expr ${j} + 1)
+      j=$(( ${j} + 1 ))
     done
     T=$(echo "${T}" | sed 's/::*/:/g;s/^://;s/:$//' | tr ":" " ")
     # uniq values without sort
@@ -109,7 +109,7 @@ parse_conf() {			# parse configuration files.
   for i in ${__CONFENV_O}; do
     T="" j=${S}
     until [ ${j} -le 1 ]; do
-      j=$(expr ${j} - 1)
+      j=$(( ${j} - 1 ))
       T="$(eval echo '${'$(eval echo ${i}_${j})'}')"
       [ -z "${T}" ] && continue
       unset "$(eval echo ${i}_${j})"
@@ -171,13 +171,17 @@ while getopts "d:f:h:u:" __FLAG; do
   u)
     __RUSR="${OPTARG}"
   ;;
+  *)
+    echo "${0}: Error : Invalid argument."
+    exit 1
+  ;;
   esac
 done
 unset __FLAG
 shift $(( ${OPTIND} - 1 ))
-__RECIPE="${@}"
+__RECIPE="${*}"
 
-if [ -z "${__TGT}" -o -z "${__RECIPE}" ]; then
+if [ -z "${__TGT}" ] || [ -z "${__RECIPE}" ]; then
   echo >&2 "Usage: $0 -h Target [-u user] receipes"
   exit 1
 fi
