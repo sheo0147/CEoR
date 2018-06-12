@@ -39,13 +39,6 @@ MODULE : /usr/local/CEoR/MODs
 RECIPE : /usr/local/CEoR/RCPs
 
 # Other configuration is overwrite
-[OTHER]		# Other configurations
-SSH    : `which ssh`
-SED    : `which sed`
-AWK    : `which awk`
-GREP   : `which grep`
-MKTRMP : `which mktemp`
-
 [OTHER]
 SSH_CONFIG : ~/.ssh/config
 __END__
@@ -86,9 +79,6 @@ __INFOS    : ${__NODECONF}/infos	# target node information data
 __CONFS    : ${__NODECONF}/confs	# target node configuration files
 __BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
 __PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
-
-[OTHER]
-SSH:'/usr/local/bin/ssh'
 __END__
 fi
 
