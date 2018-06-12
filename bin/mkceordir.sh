@@ -8,13 +8,10 @@
 #
 ##############################################################################
 
-ROOT=0
-[ "${USER}" = "root" ] && ROOT=1
-
 ##############################################################################
 ##### create /usr/local/CEoR (if UID=0)
 ##############################################################################
-if [ ${ROOT} -eq 1 ]; then
+if [ $(id -u) -eq 0 ]; then
   echo "Create /usr/local/CEoR and some directories, system wide configuration file."
   for i in /usr/local/CEoR /usr/local/CEoR/bin /usr/local/CEoR/etc /usr/local/CEoR/MODs /usr/local/CEoR/RCPs; do
     if [ -e ${i} ]; then
