@@ -10,7 +10,6 @@ prepare(){ # Run on local
 [ ! -d ${__WORKS}    ] && rm -rf ${__WORKS}    && mkdir ${__WORKS}
 [ ! -d ${__INFOS}    ] && rm -rf ${__INFOS}    && mkdir ${__INFOS}
 [ ! -d ${__CONFS}    ] && rm -rf ${__CONFS}    && mkdir ${__CONFS}
-[ ! -d ${__PKGS}     ] && rm -rf ${__PKGS}     && mkdir ${__PKGS}
 [ ! -d ${__BAKCONFS} ] && rm -rf ${__BAKCONFS} && mkdir ${__BAKCONFS}
 
 # Need to set $?=0
@@ -75,7 +74,7 @@ sudo gzip -9 ${__TGT_SCRDIR}/archive.tar
 ################################################################################
 afterwords(){ # Run on local
 ################################################################################
-scp ${__SSH_OPT} -q -rp ${__RUSR}${__TGT}:${__TGT_SCRDIR}/"*" ${__WORKS}
+scp ${__SSH_OPT} -q -rp "${__RUSR}@${__TGT}:${__TGT_SCRDIR}/*" ${__WORKS}
 
 # backup old configurations
 [ -e ${__BAKCONFS}/${__TGT} ] && rm -rf ${__BAKCONFS}/${__TGT}
@@ -94,65 +93,6 @@ mv ${__WORKS}/OS-DIST.txt ${__INFOS}/${__TGT}
 
 # Source OS Information
 . ${__INFOS}/${__TGT}/OS-DIST.txt
-
-### for each packages.
-case "${OS}" in
-  freebsd)
-    _FROMDIR="${__CONFS}/${__TGT}/usr/local/etc"
-    # etc
-    [ ! -e ${__PKGS}/etc ] && mkdir ${__PKGS}/etc
-    ln -s ${__CONFS}/${__TGT}/etc ${__PKGS}/etc/${__TGT}
-    # pkg
-    if [ -e ${_FROMDIR}/pkg.conf ]; then
-      mkdir -p ${__PKGS}/pkg/${__TGT}
-      ln -s ${_FROMDIR}/pkg* ${__PKGS}/pkg/${__TGT}
-    fi
-    for i in newsyslog periodic; do
-      mkdir -p ${__PKGS}/${i}/${__TGT}/etc
-      mkdir -p ${__PKGS}/${i}/${__TGT}/localetc
-      ln -s ${__CONFS}/${__TGT}/etc/${i}* ${__PKGS}/${i}/${__TGT}/etc
-      ln -s ${__CONFS}/${__TGT}/usr/local/etc/${i}* ${__PKGS}/${i}/${__TGT}/localetc
-    done
-  ;;
-  linux)
-    case "${DIST}" in
-    centos*)
-      _FROMDIR="${__CONFS}/${__TGT}/etc"
-      # etc
-      [ ! -e ${__PKGS}/etc ] && mkdir ${__PKGS}/etc
-      ln -s ${__CONFS}/${__TGT}/etc ${__PKGS}/etc/${__TGT}
-    ;;
-    ubuntu)
-      _FROMDIR="${__CONFS}/${__TGT}/etc"
-      # etc
-      [ ! -e ${__PKGS}/etc ] && mkdir ${__PKGS}/etc
-      ln -s ${__CONFS}/${__TGT}/etc ${__PKGS}/etc/${__TGT}
-    ;;
-    esac
-  ;;
-  *)
-  ;;
-esac
-
-# Packages
-for i in nginx postfix dovecot openldap; do
-  if [ -e ${_FROMDIR}/${i} ]; then
-    [ ! -e ${__PKGS}/${i} ] && mkdir ${__PKGS}/${i}
-    ln -s ${_FROMDIR}/${i} ${__PKGS}/${i}/${__TGT}
-  fi
-done
-
-# sudo
-if [ -e ${_FROMDIR}/sudores ]; then
-  mkdir -p ${__PKGS}/sudo/${__TGT}
-  ln -s ${_FROMDIR}/sudo* ${__PKGS}/sudo/${__TGT}
-fi
-
-# chrony
-if [ -e ${_FROMDIR}/chrony.conf ]; then
-  mkdir -p ${__PKGS}/chrony/${__TGT}
-  ln -s ${_FROMDIR}/chrony* ${__PKGS}/chrony/${__TGT}
-fi
 
 ##### Postamble ##############################################################
 # Remove All Symbolic Links
@@ -192,6 +132,5 @@ esac
 #   __INFOS     # Target node information data
 #   __CONFS     # Target node configuration files
 #   __BAKCONFS  # Node configuration backup files
-#   __PKGS      # Target package configuration files (symlink)
 #
 # getconf.rcp gets TARGET_NODE's configuration file and place __NODECONF/...

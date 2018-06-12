@@ -33,7 +33,7 @@ linux)
   exit 1
 ;;
 esac
-scp ${__SSH_OPT} -q -rp ${_ARCFILE} ${__RUSR}${__TGT}:${__TGT_SCRDIR}
+scp ${__SSH_OPT} -q -rp ${_ARCFILE} "${__RUSR}@${__TGT}:${__TGT_SCRDIR}"
 }
 
 ################################################################################

@@ -78,7 +78,6 @@ __WORKS    : ${__NODECONF}/.wrks	# working directory
 __INFOS    : ${__NODECONF}/infos	# target node information data
 __CONFS    : ${__NODECONF}/confs	# target node configuration files
 __BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
-__PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
 __END__
 fi
 
@@ -118,7 +117,6 @@ __WORKS    : ${__NODECONF}/.wrks	# working directory
 __INFOS    : ${__NODECONF}/infos	# target node information data
 __CONFS    : ${__NODECONF}/confs	# target node configuration files
 __BAKCONFS : ${__NODECONF}/bakconfs	# node configuration backup files
-__PKGS     : ${__NODECONF}/pkgs		# target node package configuration files.
 __END__
 fi
 ##### done.
