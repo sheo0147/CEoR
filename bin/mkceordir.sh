@@ -115,8 +115,8 @@ else
 #
 
 [PATH]		# PATH configurations
-MODULE : ./CEoR/MODs:./MODs		# Prj addtional modules
-RECIPE : ./CEoR/RCPs:./RCPs		# Prj addtional recipes
+MODULE : ./.CEoR/MODs:./MODs		# Prj addtional modules
+RECIPE : ./.CEoR/RCPs:./RCPs		# Prj addtional recipes
 
 [OTHER]		# Other configurations.
 DEBUG    : 0				# for DEBUG
