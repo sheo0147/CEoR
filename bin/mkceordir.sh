@@ -47,7 +47,7 @@ GREP   : `which grep`
 MKTRMP : `which mktemp`
 
 [OTHER]
-SSH_CONF : ~/.ssh/config
+SSH_CONFIG : ~/.ssh/config
 __END__
 
   fi
