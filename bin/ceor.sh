@@ -33,7 +33,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 # Global Variables
-: {__EXPORT_ENV_NAME:=""}
+: ${__EXPORT_ENV_NAME:=""}
 : ${__CONFENV_O:=""}			# User defined Path Env-Val List
 : ${__CONFENV_P:=""}			# User defined Other Env-Val List
 : ${__CONFDIR:="/usr/local/CEoR/etc"}	# Default configuration file.
