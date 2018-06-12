@@ -34,8 +34,10 @@
 
 # Global Variables
 : {__EXPORT_ENV_NAME:=""}
-: "${__CONFENV_O:=""}"			# User defined Path Env-Val List
-: "${__CONFENV_P:=""}"			# User defined Other Env-Val List
+: ${__CONFENV_O:=""}			# User defined Path Env-Val List
+: ${__CONFENV_P:=""}			# User defined Other Env-Val List
+: ${__CONFDIR:="/usr/local/CEoR/etc"}	# Default configuration file.
+: ${__CONFFILE:="ceor.conf"}	# Default configuration file.
 
 
 ##############################################################################
@@ -44,17 +46,16 @@
 parse_conf() {			# parse configuration files.
 
   # Define Variables.
-  local CONF_C="./.CEoR/ceor.conf.local"
-  local CONF_H="${HOME}/.CEoR/ceor.conf.local"
-  local CONF_D="/usr/local/CEoR/etc/ceor.conf"
-
-  local S="a"					# temporaly Suffix
+  local S=1					# temporaly Suffix
   local E="" V="" T="" L="" M=""		# temporaly Variables
   local i j					# loop counter
 
   # Read configuration file and normalize Variables_name and Values.
-  for i in ${CONF_C} ${CONF_H} ${CONF_D}; do
-    [ ! -r ${i} ] && echo "Warning: ${i} is not found" && continue
+  for i in ${@}; do
+    if [ ! -r "${i}/${__CONFFILE}" ]; then
+       echo "Warning: ${i}/${__CONFFILE} is not found"
+       continue
+    fi
     while read -r j; do
       L=$(echo "${j%%#*}" | sed -e 's/^[:space:]*$//')  # Remove comment line.
       [ -z "${L}" ] && continue
@@ -81,8 +82,8 @@ parse_conf() {			# parse configuration files.
       elif [ "${M}" = "OTHER" ]; then
         __CONFENV_O="${__CONFENV_O} ${E}"
       fi
-    done < ${i}
-    S="${S}a"
+    done < "${i}/${__CONFFILE}"
+    S=$(expr ${S} + 1)
     M=""
   done
 
@@ -92,10 +93,11 @@ parse_conf() {			# parse configuration files.
 
   # Concat PATH ENV
   for i in ${__CONFENV_P}; do
-    T=""
-    for j in _a _aa _aaa; do
-      T="${T}:$(eval echo '${'$(eval echo ${i}${j})'}')"
-      unset "$(eval echo ${i}${j})"
+    T="" j=1
+    while [ ${j} -ne ${S} ]; do
+      T="${T}:$(eval echo '${'$(eval echo ${i}_${j})'}')"
+      unset "$(eval echo ${i}_${j})"
+      j=$(expr ${j} + 1)
     done
     T=$(echo "${T}" | sed 's/::*/:/g;s/^://;s/:$//' | tr ":" " ")
     # uniq values without sort
@@ -105,12 +107,12 @@ parse_conf() {			# parse configuration files.
 
   # Overwrite OTHER ENV
   for i in ${__CONFENV_O}; do
-    T=""
-    for j in _aaa _aa _a; do
-      V="$(eval echo '${'$(eval echo ${i}${j})'}')"
-      [ -z "${V}" ] && continue
-      T="$(eval echo '${'$(eval echo ${i}${j})'}')"
-      unset "$(eval echo ${i}${j})"
+    T="" j=${S}
+    until [ ${j} -le 1 ]; do
+      j=$(expr ${j} - 1)
+      T="$(eval echo '${'$(eval echo ${i}_${j})'}')"
+      [ -z "${T}" ] && continue
+      unset "$(eval echo ${i}_${j})"
     done
     T=$(echo "${T}" | sed 's/::*/:/g;s/^://;s/:$//' | tr ":" " ")
     # uniq values without sort
@@ -150,17 +152,19 @@ check_file_in_path_env(){	# check file exist in ENVNAME path
   echo "" && return 1
 }
 
+##############################################################################
 ####### MAIN ROUTINE...
-
-##### Prepare CEoR running
-# Read configuration file.
-parse_conf
-
-#display_envlist
+##############################################################################
 
 # Parse arguments.
-while getopts "h:u:" __FLAG; do
+while getopts "d:f:h:u:" __FLAG; do
   case "${__FLAG}" in
+  d)
+    __CONFDIR="${OPTARG}"
+  ;;
+  f)
+    __CONFFILE="${OPTARG}"
+  ;;
   h)
     __TGT="${OPTARG}"
   ;;
@@ -178,6 +182,12 @@ if [ -z "${__TGT}" -o -z "${__RECIPE}" ]; then
   exit 1
 fi
 __EXPORT_ENV_NAME="${__EXPORT_ENV_NAME} __RUSR __TGT"
+
+##### CEoR initialize.
+# Read configuration file
+parse_conf ${__CONFDIR}
+# Re-read all configuration file
+parse_conf "${CONFS}"
 
 # Check recipe.
 for i in ${__RECIPE}; do
