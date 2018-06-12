@@ -68,28 +68,28 @@ CEoRには、複数のPATHを記載するためのPATH型変数と、固定の�
 が存在する場合には、./CEoR/RCPs/foo.rcpが選択される。
 
 ```
-/ -+- /usr/local/CEoR -+- bin ---- ceor.sh
+/ -+- /usr/local/CEoR -+- bin ---- ceor.sh   : 実行ファイル
    |                   +- etc ---- ceor.conf : 基本設定ファイル
    |                   +- MODs -+
    |                   |        +- ....      : CEoRで配布しているModule
    |                   |
    |                   +- RCPs -+
    |                            +- ....      : CEoRで配布しているRecipe
-   +- ~/.CEoR -+
+   +- ~/.CEoR -+- ceor.conf                  : [個人]
    |           +- MODs -+
    |           |        +- ....              : 個人で作成したModule
    |           |
    |           +- RCPs -+
-   |           |        +- ....              : 個人で作成したRecipe
+   |                    +- ....              : 個人で作成したRecipe
    |
-   +- Proj -+                                : プロジェクト
+   +- Proj -+                                : [プロジェクト]
             +- .CEoR -+
-            |         +- ceor.conf.local     : プロジェクト単位での設定ファイル
-            +- MODs -+
-            |        +- ....                 : プロジェクト単位で作成したModule
-            |
-            +- RCPs -+
-            |        +- ....                 : プロジェクト単位で作成したRecipe
+                      +- ceor.conf.local     : プロジェクト単位での設定ファイル
+                      +- MODs -+
+                      |        +- ....       : プロジェクト単位で作成したModule
+                      |        |
+                      +- RCPs -+
+                               +- ....       : プロジェクト単位で作成したRecipe
 ```
 
 * 標準で定義される固有値型変数
@@ -104,7 +104,7 @@ CEoRには、複数のPATHを記載するためのPATH型変数と、固定の�
 
 ### Configuration file 
 
-* 設定ファイルは、Shell script形式で記述する
+* 設定ファイルは、`key : Value` 形式で記述する
   * 例はrepository内の ceor.conf を参照
 
 ### Module file 

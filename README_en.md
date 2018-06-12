@@ -61,73 +61,35 @@ Below, list the software required to execute CEoR.
   * $CEoRINC_LOCAL: ./.CEoR
     
 ```
-/ -+- some/where/bin -+- ceor.sh
+/ -+- /usr/local/CEoR -+- bin ---- ceor.sh   : Execute files.
+   |                   +- etc ---- ceor.conf : Base configuration files.
+   |                   +- MODs -+
+   |                   |        +- ....      : Module which distribute CEoR proj.
+   |                   |
+   |                   +- RCPs -+
+   |                            +- ....      : Recipe which distribute CEoR proj.
+   +- ~/.CEoR -+- ceor.conf                  : Personal configuration files.
+   |           +- MODs -+
+   |           |        +- ....              : Personal module.
+   |           |
+   |           +- RCPs -+
+   |                    +- ....              : Personal recipes.
    |
-   +- $CEoRETC -+- ceor.conf                : Generic configuration file
-   |
-   +- $CEoRGENINC -+                        : CEoR generic modules
-   |               +- checkos
-   |               +- UserMod -+- add_user  : subModule directory
-   |               +- ....
-   |
-   +- $CEoRLOCINC -+                        : Personal/local Module
-   |               +- nginx
-   |               +- postfix
-   |
-   +- Proj_A -+                             : Project
-              +- ceor.conf.local            : Configuration for project
-              +- .CEoR -+- A_nginx          : Project specific modules
-              |         +- A_postfix
-              +- RCPs -+                    : Recipes
-                       +- workbench
-                       +- waf
-```
-
-#### Example: Strcture of getconf/putconf recipe 
-
-You can configure in ceor.conf.local (or ceor.conf)
-
-```
-${NODECONF}-+- .wrks
-            +- infos -+- node1          # ${INFOS}
-            |         +- node2
-            |
-            +- confs -+- node1          # ${CONFS}
-            |         +- node2
-            |
-            +- bakconfs -+- node1       # ${BAKCONFS}
-            |            +- node2
-            |
-            +- pkgs-+- etc -+- node1    # ${PKGS}
-                    |       +- node2
-                    +- nginx -+- node1
-                              +- node2
- ```
-
-```
-# for degubbing and testing
-: ${DEBUG:=0}    # Debug Mode
-: ${MOD_TEST:=0} # Module TEST Mode
-
-: ${__NODECONF:="${HOME}/NodeConfs"}        # Root node
-
-: ${__WORKS:="${__NODECONF}/.wrks"}         # Working Directory
-: ${__INFOS:="${__NODECONF}/infos"}         # Target node information data
-: ${__CONFS:="${__NODECONF}/confs"}         # Target node configuration files
-: ${__BAKCONFS:="${__NODECONF}/bakconfs"}   # Node configuration backup files
-: ${__PKGS:="${__NODECONF}/pkgs"}           # Target package configuration files (symlink)
-
-export __NODECONF __WORKS __INFOS __CONFS __BAKCONFS __PKGS
+   +- Proj -+                                : [Project]
+            +- .CEoR -+
+                      +- ceor.conf.local     : Project configurations.
+                      +- MODs -+
+                      |        +- ....       : Project modules.
+                      |        |
+                      +- RCPs -+
+                               +- ....       : Project recipes.
 ```
 
 ## Some Rules 
 
 ### Configuration file 
 
-* Read order of configuration.
-  * ./ceor.conf.local -> ${CEoRETC/ceor.conf} -> /usr/local/etc/ceor.conf
-* Write the configuration file in "Shell script" format
-  * See ceor.conf.sample or ceor.conf.local.sample
+* See /usr/local/CEoR/etc/ceor.conf or some/where/CEoR/*.conf.sample
 
 ### Module file 
 
