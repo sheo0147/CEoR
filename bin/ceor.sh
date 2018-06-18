@@ -221,7 +221,7 @@ for __i in ${MODULE}; do
   if [ -d ${__i} ]; then
     for __j in $(find ${__i} -type f -name '*.mod'); do
       echo "##### from ${__j}" >> ${__TMPDIR}/module.sh
-      cat ${__j} | sed -e '/^[     ]*#/d' >> ${__TMPDIR}/module.sh
+      cat ${__j} | sed -e '/^[:space:]*#/d' >> ${__TMPDIR}/module.sh
     done
   fi
 done
@@ -244,26 +244,29 @@ for __i in ${__RECIPE}; do
 ${1}
 __END__
 
-  /bin/sh ${__TMPDIR}/recipe.sh prepare
+  #----- Exec prepare() -----
+  echo "#!/bin/sh" > ${__TMPDIR}/local.sh
+  cat ${__TMPDIR}/module.sh >> ${__TMPDIR}/local.sh
+  cat ${__TMPDIR}/recipe.sh | sed -e '/^[:space:]*#/d' >> ${__TMPDIR}/local.sh
+  /bin/sh ${__TMPDIR}/local.sh prepare
   [ ${?} -ne 0 ] && echo "Error in prepare. Exit" && exit
 
+  #----- Execute remote -----
   echo "#!/bin/sh" > ${__TMPDIR}/remote.sh
   # Export environment variables
   echo "__TGT_SCRDIR=${__TGT_SCRDIR}" >> ${__TMPDIR}/remote.sh
   echo "__TGT=${__TGT}" >> ${__TMPDIR}/remote.sh
   # Generate script
-  cat ${__TMPDIR}/module.sh >> ${__TMPDIR}/remote.sh
-  cat ${__TMPDIR}/recipe.sh | sed -e '/^[     ]*#/d' >> ${__TMPDIR}/remote.sh
+  cat ${__TMPDIR}/local.sh >> ${__TMPDIR}/remote.sh
   scp ${__SSH_OPT} -q -rp ${__TMPDIR}/remote.sh "${__RUSR}@${__TGT}:${__TGT_SCRDIR}"
   ssh ${__SSH_OPT} -q -l ${__RUSR} -t "${__TGT}" "/bin/sh ${__TGT_SCRDIR}/remote.sh main"
   __ERROR=${?}
-  [ ${DEBUG} != "0" ] && cp ${__TMPDIR}/remote.sh .
   rm ${__TMPDIR}/remote.sh
   ssh ${__SSH_OPT} -q -l ${__RUSR} -t "${__TGT}" "rm ${__TGT_SCRDIR}/remote.sh"
   [ ${__ERROR} -ne 0 ] && echo "Error in main. Exit" && exit
 
-  /bin/sh ${__TMPDIR}/recipe.sh afterwords
-
+  #----- Exec afterwords -----
+  /bin/sh ${__TMPDIR}/local.sh afterwords
   ssh ${__SSH_OPT} -q -l ${__RUSR} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
 done
 
