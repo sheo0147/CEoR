@@ -202,6 +202,10 @@ __RECIPE="${__RCP}"
 
 ##### Generate Scripts #######################################################
 atexit() {
+  if [ -e ${__TMPDIR}/ssh-${__TGT} ]; then
+    /usr/bin/ssh ${__SSH_OPT} -q -l ${__RUSR} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
+    /usr/bin/ssh -O exit ${__SSH_OPT} -l ${__RUSR} ${__TGT}
+  fi
   [ ! -z "${__TMPDIR}" ] && rm -rf "${__TMPDIR}"
 }
 trap atexit EXIT
