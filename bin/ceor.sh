@@ -134,9 +134,6 @@ check_file_in_path_env(){	# check file exist in ENVNAME path
 # Return first match filename.
 # 	ex.:	RET=check_file_in_path_env "FileName" "RECIPE"
 
-  local i
-  local loop
-
   loop="$(eval echo '${'$(eval echo ${2})"}")"
   if [ -z "${loop}" ]; then
     echo "check_file_in_path_env: Error: PATH Environment(${2}) is not available" 1>&2
