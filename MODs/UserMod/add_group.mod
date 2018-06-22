@@ -17,7 +17,7 @@ add_group() {
     echo >&2 "Error: add_group: require GROUPNAME"
     return 1
   fi
-  local _GID
+  _GID=""
   if [ ! -z "${2}" ]; then
     [ "${2}" -eq 0 ] 2> /dev/null
     if [ $? -ge 2 ]; then
@@ -31,9 +31,7 @@ add_group() {
       _GID="-g ${2}"
     fi
   fi
-  local _GROUPNAME=${1}
-  local _RET
-  local _RET_CD
+  _GROUPNAME=${1}
   _RET=`is_exist_group ${_GROUPNAME}`
   _RET_CD=${?}
   if [ ${_RET_CD} -eq 1 ]; then

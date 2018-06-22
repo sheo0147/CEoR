@@ -16,9 +16,9 @@ is_exist_group() {
     echo >&2 "Error: is_exist_group: require GROUPNAME"
     return 1
   fi
-  local _MSG="exist"
-  local _GROUPNAME=${1}
-  local _RET=`getent group ${_GROUPNAME}`
+  _MSG="exist"
+  _GROUPNAME=${1}
+  _RET=`getent group ${_GROUPNAME}`
   [ ${DEBUG} ] && echo "DEBUG(is_exist_group) ${_GROUPNAME} / RetCode=${_RET}" >&2
   if  [ -z "${_RET}" ] ; then
     echo "Warn group:${_GROUPNAME} is not ${_MSG}"

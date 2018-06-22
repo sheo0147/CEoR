@@ -17,9 +17,9 @@ is_exist_command() {
     echo >&2 "Error: is_exist_command: require command name"
     return 1
   fi
-  local _MSG="exist"
-  local _CMDNAME=${1}
-  local _CMD=`which ${_CMDNAME}`
+  _MSG="exist"
+  _CMDNAME=${1}
+  _CMD=`which ${_CMDNAME}`
 
    [ ${DEBUG} ] && echo "DEBUG(is_exist_command) command:${1}" >&2
   if [ -z "${_CMD}" ]; then

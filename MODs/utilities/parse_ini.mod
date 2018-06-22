@@ -18,11 +18,11 @@ parse_ini() {
     return 1
   fi
   # setting
-  local _INI_SECTION=${1}
+  _INI_SECTION=${1}
   if [ -z ${2} ]; then
-    local _INI_FILE="./CEoR.ini"
+    _INI_FILE="./CEoR.ini"
   else
-    local _INI_FILE=${2}
+    _INI_FILE=${2}
   fi
 
   [ ${DEBUG} ] && echo "DEBUG(parse_ini) _INI_SECTION:${_INI_SECTION}" >&2

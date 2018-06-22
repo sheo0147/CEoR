@@ -17,8 +17,8 @@ is_exist_file_or_dir() {
     echo >&2 "Error: is_exist_file_or_dir: require filename|directoryname"
     return 1
   fi
-  local _MSG="exist"
-  local _FILENAME=${1}
+  _MSG="exist"
+  _FILENAME=${1}
 
    [ ${DEBUG} ] && echo "DEBUG(is_exist_file_or_dir) file_or_dir_name:${1}" >&2
   if [ ! -e "${_FILENAME}" ]; then

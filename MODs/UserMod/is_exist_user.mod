@@ -16,8 +16,8 @@ is_exist_user() {
     echo >&2 "Error: is_exist_user: require username"
     return 1
   fi
-  local _MSG="exist"
-  local _RET=`getent passwd ${1}`
+  _MSG="exist"
+  _RET=`getent passwd ${1}`
   [ ${DEBUG} ] && echo "DEBUG(is_exist_user) ${1}:${_RET}" >&2
 
   if  [ -z "${_RET}" ] ; then

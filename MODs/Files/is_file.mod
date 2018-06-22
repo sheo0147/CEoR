@@ -17,8 +17,8 @@ is_file() {
     echo >&2 "Error: is_file: require filename"
     return 1
   fi
-  local _MSG="file"
-  local _FILENAME=${1}
+  _MSG="file"
+  _FILENAME=${1}
 
    [ ${DEBUG} ] && echo "DEBUG(is_file) filename:${1}" >&2
   if [ ! -f "${_FILENAME}" ]; then

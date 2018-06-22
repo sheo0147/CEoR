@@ -16,8 +16,8 @@ del_group() {
     echo >&2 "Error: del_group: require GROUPNAME"
     return 1
   fi
-  local _GROUPNAME=${1}
-  local _RET=`is_exist_group ${_GROUPNAME}`
+  _GROUPNAME=${1}
+  _RET=`is_exist_group ${_GROUPNAME}`
   if [ ${?} -eq 1 ]; then
     echo "Warn ${_GROUPNAME} not exist"
     return 0

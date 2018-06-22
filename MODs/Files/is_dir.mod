@@ -17,8 +17,8 @@ is_dir() {
     echo >&2 "Error: is_dir: require directory name"
     return 1
   fi
-  local _MSG="directory"
-  local _DIRNAME=${1}
+  _MSG="directory"
+  _DIRNAME=${1}
 
    [ ${DEBUG} ] && echo "DEBUG(is_dir) dirname:${1}" >&2
   if [ ! -d "${_DIRNAME}" ]; then
