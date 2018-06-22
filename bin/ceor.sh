@@ -46,9 +46,9 @@
 parse_conf() {			# parse configuration files.
 
   # Define Variables.
-  local S=1					# temporaly Suffix
-  local E="" V="" T="" L="" M=""		# temporaly Variables
-  local i j					# loop counter
+  S=1					# temporaly Suffix
+  E="" V="" T="" L="" M=""		# temporaly Variables
+  i=0 j=0					# loop counter
 
   # Read configuration file and normalize Variables_name and Values.
   for i in ${*}; do
@@ -60,13 +60,13 @@ parse_conf() {			# parse configuration files.
       L=$(echo "${j%%#*}" | sed -e 's/^[:space:]*$//')  # Remove comment line.
       [ -z "${L}" ] && continue
 
-      [ -z "${M}" ] && [ "$(echo "${L}" | cut -c 1)" != '[' ] && echo "parse_conf: Error! : Syntax is error in ${i}" && exit 1
+      [ -z "${M}" ] && [ "$(echo "${L}" | cut -c 1)" != '[' ] && echo "parse_conf: Error! : Syntax is error in ${i}/${__CONFFILE}" && exit 1
       # Check and set mode.
       if [ "$(echo "${L}" | cut -c 1)" = '[' ]; then
-        V="${L#*[}"
-	V="${V%]*}"
+        V="${L#*\[}"
+	V="${V%\]*}"
 	V=$(echo "${V}" | tr "[:lower:]" "[:upper:]")
-        [ ! -z "${V}" ] && [ "${V}" != "PATH" ] && [ "${V}" != "OTHER" ] && echo "parse_conf: Error! : Syntax error in ${i}" && exit 1
+        [ ! -z "${V}" ] && [ "${V}" != "PATH" ] && [ "${V}" != "OTHER" ] && echo "parse_conf: Error! : Syntax error in ${i}/${__CONFFILE}" && exit 1
         M="${V}"
         continue
       fi
@@ -123,8 +123,6 @@ parse_conf() {			# parse configuration files.
 
 ##############################################################################
 display_envlist(){		# display envlists
-  local i				# loop counter
-
   for i in ${__CONFENV_P} ${__CONFENV_O}; do
     echo "${i}=\"$(eval echo '${'$(eval echo ${i})'}')\""
   done
@@ -157,7 +155,7 @@ check_file_in_path_env(){	# check file exist in ENVNAME path
 ##############################################################################
 
 # Parse arguments.
-while getopts "d:f:h:u:" __FLAG; do
+while getopts d:f:h:u: __FLAG; do
   case "${__FLAG}" in
   d)
     __CONFDIR="${OPTARG}"
