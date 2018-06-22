@@ -74,29 +74,40 @@ sudo gzip -9 ${__TGT_SCRDIR}/archive.tar
 ################################################################################
 afterwords(){ # Run on local
 ################################################################################
+__DATE=$(date "+%Y%m%d%H%M%S")
+__CONFDIR="${__BAKCONFS}/${__TGT}-${__DATE}"
+__INFODIR="${__BAKCONFS}/${__TGT}-${__DATE}-info"
+
 scp ${__SSH_OPT} -q -rp "${__RUSR}@${__TGT}:${__TGT_SCRDIR}/*" ${__WORKS}
 
 # backup old configurations
-[ -e ${__BAKCONFS}/${__TGT} ] && rm -rf ${__BAKCONFS}/${__TGT}
-[ -d ${__CONFS}/${__TGT}    ] && mv ${__CONFS}/${__TGT} ${__BAKCONFS}/ && touch ${__BAKCONFS}/${__TGT}
-mkdir ${__CONFS}/${__TGT}
-[ -d ${__INFOS}/${__TGT} ] && rm -rf ${__INFOS}/${__TGT}
-mkdir ${__INFOS}/${__TGT}
-rm -rf ${__PKGS}/*/${__TGT}
+[ -e ${__CONFS}/${__TGT}    ] && rm ${__CONFS}/${__TGT}
+[ -e ${__INFOS}/${__TGT}    ] && rm ${__INFOS}/${__TGT}
+for i in $(ls -1 ${__BAKCONFS} | grep -v 'tgz$' | grep -v 'info$'); do
+  tar czf ${__BAKCONFS}/${i}.tgz ${__BAKCONFS}/${i} ${__BAKCONFS}/${i}-info
+  rm -rf ${__BAKCONFS}/${i} ${__BAKCONFS}/${i}-info
+done
+
+mkdir ${__CONFDIR}
+mkdir ${__INFODIR}
+__CONFDIR=$(echo "${PWD}/${__CONFDIR}" | sed 's/\/\.\//\//g' )
+__INFODIR=$(echo "${PWD}/${__INFODIR}" | sed 's/\/\.\//\//g' )
+ln -s ${__CONFDIR} ${__CONFS}/${__TGT}
+ln -s ${__INFODIR} ${__INFOS}/${__TGT}
 
 # Extract configuration archives
-tar xzf ${__WORKS}/archive.tar.gz -C ${__CONFS}/${__TGT}
+tar xzf ${__WORKS}/archive.tar.gz -C ${__CONFDIR}
 rm ${__WORKS}/archive.tar.gz
-mv ${__WORKS}/ls-lR.txt ${__INFOS}/${__TGT}
-mv ${__WORKS}/stat.txt ${__INFOS}/${__TGT}
-mv ${__WORKS}/OS-DIST.txt ${__INFOS}/${__TGT}
+mv ${__WORKS}/ls-lR.txt   ${__INFODIR}
+mv ${__WORKS}/stat.txt    ${__INFODIR}
+mv ${__WORKS}/OS-DIST.txt ${__INFODIR}
 
 # Source OS Information
-. ${__INFOS}/${__TGT}/OS-DIST.txt
+. ${__INFODIR}/OS-DIST.txt
 
 ##### Postamble ##############################################################
 # Remove All Symbolic Links
-find ${__CONFS}/${__TGT} -type l -exec rm -- {} \;
+find ${__CONFDIR} -type l -exec rm -- {} \;
 
 # for OS Special
 case "${OS}" in
@@ -105,10 +116,10 @@ case "${OS}" in
   linux)
     case "${DIST}" in
       centos*)
-        chmod 600 ${__CONFS}/${__TGT}/etc/shadow
-        chmod 600 ${__CONFS}/${__TGT}/etc/shadow-
-        chmod 600 ${__CONFS}/${__TGT}/etc/gshadow
-        chmod 600 ${__CONFS}/${__TGT}/etc/gshadow-
+        chmod 600 ${__CONFDIR}/etc/shadow
+        chmod 600 ${__CONFDIR}/etc/shadow-
+        chmod 600 ${__CONFDIR}/etc/gshadow
+        chmod 600 ${__CONFDIR}/etc/gshadow-
       ;;
       ubuntu)
       ;;
