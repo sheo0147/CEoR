@@ -57,12 +57,12 @@ for i in ~/.CEoR ~/.CEoR/MODs ~/.CEoR/RCPs; do
     mkdir $i
   fi
 done
-if [ -e ~/.CEoR/ceor.conf.local ]; then
-  echo "~/.CEoR/ceor.conf.local is exist... skip"
+if [ -e ~/.CEoR/ceor.conf ]; then
+  echo "~/.CEoR/ceor.conf is exist... skip"
 else
-  cat << '__END__' > ~/.CEoR/ceor.conf.local
+  cat << '__END__' > ~/.CEoR/ceor.conf
 #
-# ~/.CEoR/ceor.conf.local:	CEoR Personal Configuration.
+# ~/.CEoR/ceor.conf:	CEoR Personal Configuration.
 #
 # for /usr/bin/what:
 #  @(#)CEoR Personal Confguration file.
@@ -92,12 +92,12 @@ for i in ./.CEoR ./.CEoR/MODs ./.CEoR/RCPs; do
     mkdir $i
   fi
 done
-if [ -e ./.CEoR/ceor.conf.local ]; then
-  echo "./.CEoR/ceor.conf.local is exist... skip"
+if [ -e ./.CEoR/ceor.conf ]; then
+  echo "./.CEoR/ceor.conf is exist... skip"
 else
-  cat << '__END__' > ./.CEoR/ceor.conf.local
+  cat << '__END__' > ./.CEoR/ceor.conf
 #
-# ./ceor.conf.local:	CEoR Per Project Configuration.
+# ./ceor.conf:	CEoR Per Project Configuration.
 #
 # for /usr/bin/what:
 #  @(#)CEoR Local Confguration file.
