@@ -60,9 +60,9 @@ parse_conf() {			# parse configuration files.
       L=$(echo "${j%%#*}" | sed -e 's/^[:space:]*$//')  # Remove comment line.
       [ -z "${L}" ] && continue
 
-      [ -z "${M}" ] && [ "$(echo "${L}" | cut -c 1)" != '[' ] && echo "parse_conf: Error! : Syntax is error in ${i}/${__CONFFILE}" && exit 1
+      [ -z "${M}" ] && [ ${L%%[^\[]*} != '[' ] && echo "parse_conf: Error! : Syntax is error in ${i}/${__CONFFILE}" && exit 1
       # Check and set mode.
-      if [ "$(echo "${L}" | cut -c 1)" = '[' ]; then
+      if [ "${L%%[^\[]*}" = '[' ]; then
         V="${L#*\[}"
 	V="${V%\]*}"
 	V=$(echo "${V}" | tr "[:lower:]" "[:upper:]")
