@@ -10,12 +10,11 @@ prepare(){ # Run on local
 [ ! -d ${__WORKS}    ] && rm -rf ${__WORKS}    && mkdir ${__WORKS}
 [ ! -d ${__INFOS}    ] && rm -rf ${__INFOS}    && mkdir ${__INFOS}
 [ ! -d ${__CONFS}    ] && rm -rf ${__CONFS}    && mkdir ${__CONFS}
-[ ! -d ${__PKGS}     ] && rm -rf ${__PKGS}     && mkdir ${__PKGS}
 [ ! -d ${__BAKCONFS} ] && rm -rf ${__BAKCONFS} && mkdir ${__BAKCONFS}
 
 # Generate Archive File
 _ARCFILE=${__TMPDIR}/archive.tgz
-(cd ${__NODECONF}; tar czf - `basename ${__INFOS}`/${__TGT} `basename ${__CONFS}`/${TGT}) > ${_ARCFILE}
+(cd ${__NODECONF}; tar czhf - `basename ${__INFOS}`/${__TGT} `basename ${__CONFS}`/${TGT}) > ${_ARCFILE}
 # Get Target OS/Distribution Data
 . ${__INFOS}/${__TGT}/OS-DIST.txt
 
@@ -147,6 +146,5 @@ return 0
 #   __INFOS     # Target node information data
 #   __CONFS     # Target node configuration files
 #   __BAKCONFS  # Node configuration backup files
-#   __PKGS      # Target package configuration files (symlink)
 #
 # putconf.rcp puts TARGET_NODE's configuration file from __NODECONF/...
