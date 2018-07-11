@@ -34,7 +34,7 @@ if [ $(id -u) -eq 0 ]; then
 # PATH configuration is deduplication and concat
 [PATH]		# PATH configurations
 BIN    : /usr/local/CEoR/bin
-CONFS  : /usr/local/CEoR/etc
+CONFS  : ./.CEoR:~/.CEoR:/usr/local/CEoR/etc
 MODULE : /usr/local/CEoR/MODs
 RECIPE : /usr/local/CEoR/RCPs
 
