@@ -32,3 +32,12 @@ $ sh bin/mkceorprjdir.sh
 % /bin/sh /usr/local/CEoR/bin/ceor.sh -u UserName -h TargetHost concept.rcp
 ```
 and then, run `ls -l` on TargetHost.
+
+## update
+
+* Get CEoR from github
+* Run followings
+```
+$ cd some/where/CEoR
+$ sudo sh bin/instceor.sh
+```

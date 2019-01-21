@@ -37,3 +37,12 @@ $ sh bin/mkceorprjdir.sh
 ```
 
 リモートホスト上で`ls -l`が実行されます。
+
+## update
+
+* CEoRをgithubから取得します。
+* 以下のコマンドを実行します。
+```
+$ cd some/where/CEoR
+$ sudo sh bin/instceor.sh
+```
