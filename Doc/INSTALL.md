@@ -14,10 +14,13 @@ CEoR needs following environment.
 * Get CEoR from github
 * Run followings
 ```
-cd some/where/CEoR
-sudo sh bin/instceor.sh
-sudo sh bin/mkceordir.sh
+$ cd some/where/CEoR
+$ sudo sh bin/instceor.sh
+$ sh bin/mkceordir.sh
+$ cd your/project/dir
+$ sh bin/mkceorprjdir.sh
 ```
+
 * Check directories.
   * CEoR distribution file is put under `/usr/local/CEoR`
   * Personal configuration is put under `~/.CEoR`
@@ -29,3 +32,12 @@ sudo sh bin/mkceordir.sh
 % /bin/sh /usr/local/CEoR/bin/ceor.sh -u UserName -h TargetHost concept.rcp
 ```
 and then, run `ls -l` on TargetHost.
+
+## update
+
+* Get CEoR from github
+* Run followings
+```
+$ cd some/where/CEoR
+$ sudo sh bin/instceor.sh
+```
