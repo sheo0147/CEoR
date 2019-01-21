@@ -17,7 +17,10 @@ CEoR needs following environment.
 $ cd some/where/CEoR
 $ sudo sh bin/instceor.sh
 $ sh bin/mkceordir.sh
+$ cd your/project/dir
+$ sh bin/mkceorprjdir.sh
 ```
+
 * Check directories.
   * CEoR distribution file is put under `/usr/local/CEoR`
   * Personal configuration is put under `~/.CEoR`
