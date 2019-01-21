@@ -14,9 +14,9 @@ CEoR needs following environment.
 * Get CEoR from github
 * Run followings
 ```
-cd some/where/CEoR
-sudo sh bin/instceor.sh
-sudo sh bin/mkceordir.sh
+$ cd some/where/CEoR
+$ sudo sh bin/instceor.sh
+$ sh bin/mkceordir.sh
 ```
 * Check directories.
   * CEoR distribution file is put under `/usr/local/CEoR`
