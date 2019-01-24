@@ -198,8 +198,8 @@ __RECIPE="${__RCP}"
 ##### Generate Scripts #######################################################
 atexit() {
   if [ -e ${__TMPDIR}/ssh-${__TGT} ]; then
-    /usr/bin/ssh ${__SSH_OPT} -q -l ${__RUSR} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
-    /usr/bin/ssh -O exit ${__SSH_OPT} -l ${__RUSR} ${__TGT}
+    /usr/bin/ssh ${__SSH_OPT} -q ${__RUSR_OPT} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
+    /usr/bin/ssh -O exit ${__SSH_OPT} ${__RUSR_OPT} ${__TGT}
   fi
   [ ! -z "${__TMPDIR}" ] && rm -rf "${__TMPDIR}"
 }
@@ -228,13 +228,14 @@ done
 ##### Execute Scripts ########################################################
 __SSH_OPT="-o ControlMaster=auto -o ControlPath=${__TMPDIR}/ssh-${__TGT} -o ControlPersist=10m -o ForwardX11=no"
 [ ! -z "${SSH_CONFIG}" ] && [ -e "${SSH_CONFIG}" ] && __SSH_OPT="-F ${SSH_CONFIG} ${__SSH_OPT}"
-/usr/bin/ssh -N -f ${__SSH_OPT} -l ${__RUSR} ${__TGT}
+[ ! -z ${__RUSR} ] && __RUSR_OPT="-l ${__RUSR}"
+/usr/bin/ssh -N -f ${__SSH_OPT} ${__RUSR_OPT} ${__TGT}
 __EXPORT_ENV_NAME="${__EXPORT_ENV_NAME} __SSH_OPT"
 eval "export ${__EXPORT_ENV_NAME}"
 
 ##### Execute Recipes
 for __i in ${__RECIPE}; do
-  __TGT_SCRDIR=`ssh ${__SSH_OPT} -l ${__RUSR} -q ${__TGT} mktemp -d .CEoR.XXXXXX`
+  __TGT_SCRDIR=`ssh ${__SSH_OPT} ${__RUSR_OPT} -q ${__TGT} mktemp -d .CEoR.XXXXXX`
   export __TGT_SCRDIR
 
   cp ${__i} ${__TMPDIR}/recipe.sh
@@ -258,15 +259,15 @@ __END__
   # Generate script
   cat ${__TMPDIR}/local.sh >> ${__TMPDIR}/remote.sh
   scp ${__SSH_OPT} -q -rp ${__TMPDIR}/remote.sh "${__RUSR}@${__TGT}:${__TGT_SCRDIR}"
-  ssh ${__SSH_OPT} -q -l ${__RUSR} -t "${__TGT}" "/bin/sh ${__TGT_SCRDIR}/remote.sh main"
+  ssh ${__SSH_OPT} -q ${__RUSR_OPT} -t "${__TGT}" "/bin/sh ${__TGT_SCRDIR}/remote.sh main"
   __ERROR=${?}
   rm ${__TMPDIR}/remote.sh
-  ssh ${__SSH_OPT} -q -l ${__RUSR} -t "${__TGT}" "rm ${__TGT_SCRDIR}/remote.sh"
+  ssh ${__SSH_OPT} -q ${__RUSR_OPT} -t "${__TGT}" "rm ${__TGT_SCRDIR}/remote.sh"
   [ ${__ERROR} -ne 0 ] && echo "Error in main. Exit" && exit
 
   #----- Exec afterwords -----
   /bin/sh ${__TMPDIR}/local.sh afterwords
-  ssh ${__SSH_OPT} -q -l ${__RUSR} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
+  ssh ${__SSH_OPT} -q ${__RUSR_OPT} "${__TGT}" "/bin/rm -rf ${__TGT_SCRDIR}"
 done
 
-/usr/bin/ssh -O exit ${__SSH_OPT} -l ${__RUSR} ${__TGT}
+/usr/bin/ssh -O exit ${__SSH_OPT} ${__RUSR_OPT} ${__TGT}
