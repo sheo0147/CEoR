@@ -85,10 +85,11 @@ scp ${__SSH_OPT} -q -rp "${__RUSR}@${__TGT}:${__TGT_SCRDIR}/*" ${__WORKS}
 [ -e ${__INFOS}/${__TGT}    ] && rm ${__INFOS}/${__TGT}
 __PWD__=${PWD}
 cd ${__BAKCONFS}
-for i in $(ls -1d ${__TGT}* | grep -v 'tgz$' | grep -v 'info$'); do
+i=`ls -1d ${__TGT}* 2> /dev/null | grep -Ee "${__TGT}-[0-9]{14}$"`
+if [ ! -z ${i} ]; then
   tar czf ${i}.tgz ${i} ${i}-info
   rm -rf ${i} ${i}-info
-done
+fi
 cd ${__PWD__}; unset __PWD__
 
 mkdir ${__CONFDIR}
