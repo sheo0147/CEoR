@@ -1,0 +1,118 @@
+#
+# @(#) Distribution ssh public key.
+#
+#   Copyright (c) 2019- T.Hayashi.
+#
+#   use these vars.(set by CEoR)
+#     __TGT         : target node.
+#     __TMPDIR      : tmp dir
+#     __TGT_SCRDIR  : target tmp   
+#
+#   require following vars on ./.CEoR/ceor.conf
+#     __TARGETCONFS : target user and public key file Directory. 
+#     __PUBKEYS     : public key file directory.
+#
+#   ex:
+#     cat ${__TARGETCONFS}/${__TGT}.sh
+#       ######### user            public_key_file
+#       _KEYLIST="
+#                 user001         user001_publik_key_file
+#                 user002         user002_publik_key_file
+#               "
+#     ls ${__PUBKEYS}
+#       user001_publik_key_file  user002_publik_key_file
+#
+#   test:
+#         host:   mac osx 10.13.6
+#         remote: centos  7.4.1708
+#                 FreeBSD 11.1
+#
+################################################################################
+prepare(){ # Run on local
+:
+################################################################################
+
+  [ ! -d ${__TARGETCONFS} ] && echo "${__TARGETCONFS} is not found. Error exit." && exit 1
+  [ ! -d ${__PUBKEYS}     ] && echo "${__PUBKEYS} is not found. Error exit." && exit 1
+  [ ! -e ${__TARGETCONFS}/${__TGT}.sh  ] && echo "${__TARGETCONFS}/${__TGT}.sh is not found. Error exit." && exit 1
+
+  # this const use host and remote
+  #     ARCHIVES      : sending　public key file directory.
+  _KEYARCHS="ARCHIVES"
+
+  # make _KEYARCHS directory on tmp
+  mkdir ${__TMPDIR}/${_KEYARCHS}
+
+  # load key list
+  . "${__TARGETCONFS}/${__TGT}.sh"
+  _KLST=${_KEYLIST}
+
+  _ISUSER=true
+  for i in ${_KLST} ; do
+      # echo "-----------------"
+    if ${_ISUSER} ; then
+      # echo "::::: ${i} :::::"
+      _USR="${i}"
+      touch ${__TMPDIR}/${_KEYARCHS}/${_USR}
+      _ISUSER=false
+    else
+      # echo "${__PUBKEYS}/${i}"
+      cat "${__PUBKEYS}/${i}" >> ${__TMPDIR}/${_KEYARCHS}/${_USR}
+      _ISUSER=true
+    fi 
+  done
+  # Generate Archive File
+  __PWD__=${PWD}
+  cd ${__TMPDIR}
+
+  tar -czf archives.tar.gz ${_KEYARCHS}/*
+
+  cd ${__PWD__}; unset __PWD__
+
+  # Send Archive File
+  scp ${__SSH_OPT} -q -rp ${__TMPDIR}/archives.tar.gz ${__TGT}:${__TGT_SCRDIR}
+  
+}
+
+################################################################################
+main(){ # Run on remote
+:
+################################################################################
+  _KEYARCHS="ARCHIVES"
+  # Preparing to work.
+
+  cd ${__TGT_SCRDIR}
+  tar xzf archives.tar.gz 
+  cd ${_KEYARCHS}
+
+  # ls -la
+  for i in `find * -type f` ; do
+    # echo "-*-${i}-*-*-*-*-*-*-*-*-*-"
+    is_exist_user "${i}"
+    if [ ${?} -eq 0 ] ; then
+      if [ ${i} = "root" ] ; then
+        # echo "I am root"
+        MYHOME=/${i}
+      else
+        MYHOME=/home/${i}
+      fi
+        # echo "${MYHOME}"
+      [ ! -d ${MYHOME} ] && echo "user dir ${i} is not found. Error exit." && exit 1
+      [ ! -d ${MYHOME}/.ssh ] && sudo mkdir -p ${MYHOME}/.ssh
+      sudo chown ${i} ${MYHOME}/.ssh
+      sudo chown ${i}:${i} ${MYHOME}/.ssh
+      sudo chmod 700 ${MYHOME}/.ssh
+      sudo cp ${i} ${MYHOME}/.ssh/authorized_keys
+      sudo chown ${i} ${MYHOME}/.ssh/authorized_keys
+      sudo chown ${i}:${i} ${MYHOME}/.ssh/authorized_keys
+      sudo chmod 600 ${MYHOME}/.ssh/authorized_keys
+    fi
+  done
+
+}
+
+################################################################################
+afterwords(){ # Run on local
+:
+################################################################################
+}
