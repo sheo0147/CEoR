@@ -31,7 +31,7 @@ checkos() {
     _DISTRIB_VERSION=`/bin/freebsd-version`
     ;;
   Linux)
-    [ ! -e /etc/os-release ] && "Error: This is Linux but has no os-release" && return 1
+    [ ! -e /etc/os-release ] && echo "Error: This is Linux but has no os-release" && return 1
     # when line matches "^NAME=" output QUOTED string. 
     _DISTRIB=`cat /etc/os-release | sed -ne '/^NAME=/s/.*"\(.*\)"/\1/p'`
     _DISTRIB_VERSION=`cat /etc/os-release | sed -ne '/^VERSION_ID=/s/.*"\(.*\)"/\1/p'`
