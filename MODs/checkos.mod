@@ -31,10 +31,17 @@ checkos() {
     _DISTRIB_VERSION=`/bin/freebsd-version`
     ;;
   Linux)
-    [ ! -e /etc/os-release ] && echo "Error: This is Linux but has no os-release" && return 1
+    if [ ! -e /etc/os-release ] ; then
+      [ ! -e /etc/redhat-release ] && echo "Error: This is Linux but has no os-release" && return 1
+      _DISTRIB=`cat /etc/redhat-release | sed -e 's/^\([a-zA-Z][a-zA-Z]*\)..*/\1/'`
+      _DISTRIB_VERSION=`cat /etc/redhat-release | sed -e 's/[^0-9.]//g'`
+    else
+      _DISTRIB=`cat /etc/os-release | sed -ne '/^NAME=/s/.*"\(.*\)"/\1/p'`
+      _DISTRIB_VERSION=`cat /etc/os-release | sed -ne '/^VERSION_ID=/s/.*"\(.*\)"/\1/p'`
+    fi
+
+    # [ ! -e /etc/os-release ] && echo "Error: This is Linux but has no os-release" && return 1
     # when line matches "^NAME=" output QUOTED string. 
-    _DISTRIB=`cat /etc/os-release | sed -ne '/^NAME=/s/.*"\(.*\)"/\1/p'`
-    _DISTRIB_VERSION=`cat /etc/os-release | sed -ne '/^VERSION_ID=/s/.*"\(.*\)"/\1/p'`
     ;;
   Darwin)
     _DISTRIB=`sw_vers -productName`
