@@ -13,6 +13,8 @@
 
 add_sudo_user() {
   _MODNAME="add_sudo_user"
+  [ ${DEBUG} ] && echo "MODULE: ${_MODNAME}"
+
   if [ -z "${1}" ]; then
     echo >&2 "Error: ${_MODNAME}: require USERNAME"
     return 1
@@ -33,11 +35,9 @@ add_sudo_user() {
       _TARGET="/usr/local/etc/sudoers.d"
     ;;
     linux)
-      _TARGET="/etc/sudoers.d"
       case "${_DIST}" in
-        centos*)
-        ;;
-        ubuntu)
+        centos* | ubuntu)
+          _TARGET="/etc/sudoers.d"
         ;;
         *)
           echo "Not Supported Distribution" >&2
@@ -50,19 +50,35 @@ add_sudo_user() {
       exit 1
     ;;
   esac
+  [ ${DEBUG} ] && echo "OS: ${_OS}:${_DIST}"
+  [ ${DEBUG} ] && echo "target: ${_TARGET}"
+# set -x
+  [ ! -d ${_TARGET} ] && echo "${_TARGET} is not found. Error exit." && exit 1
 
-  # [ ! -d ${_TARGET} ] && echo "${_TARGET} is not found. Error exit." && exit 1
+  sudo touch ${_TARGET}/${_USERNAME}
+  # sudo echo "${_USERNAME} ALL=(ALL) NOPASSWD: ALL" > ${_TARGET}/${_USERNAME}
+  _CMD="'${_USERNAME} ALL=(ALL) NOPASSWD: ALL'"
+  sudo sh -c "echo ${_CMD} > ${_TARGET}/${_USERNAME}"
+  _CMD="'s/^${_USERNAME}/#${_USERNAME}/'"
+  sudo sh -c "sed -i -e ${_CMD} /etc/sudoers"
+# unset -x
 
- 
   ##########################################################
-  echo "Not implement yet"
-  return 1
+  # echo "Not implement yet"
+  # return 1
   ##########################################################
 
 }
+
 ##### TEST CODE
+# if [ ${add_sudo_user_TEST} ]; then
+#   # . add_sudo_user.mod
+#   # echo "---Add nonexistentuser"
+#   # add_sudo_user "nonexistentuser" # Maybe fail
+# fi
+
 if [ ${add_sudo_user_TEST} ]; then
-  # . add_sudo_user.mod
-  # echo "---Add nonexistentuser"
-  # add_sudo_user "nonexistentuser" # Maybe fail
+  echo "---Add nonexistentuser"
+  add_sudo_user "nonexistentuser" # Maybe fail
+  echo "Exit status is ${?}"
 fi
