@@ -6,7 +6,7 @@
 #   use these vars.(set by CEoR)
 #     __TGT         : target node.
 #     __TMPDIR      : tmp dir
-#     __TGT_SCRDIR  : target tmp   
+#     __TGT_SCRDIR  : target tmp
 #
 #   require following vars on ./.CEoR/ceor.conf
 #     __TARGETCONFS : target user and public key file Directory. 
@@ -90,6 +90,7 @@ main(){ # Run on remote
     # echo "-*-${i}-*-*-*-*-*-*-*-*-*-"
     is_exist_user "${i}"
     if [ ${?} -eq 0 ] ; then
+      _USERNAME=${i}
       if [ ${i} = "root" ] ; then
         # echo "I am root"
         MYHOME=/${i}
@@ -106,6 +107,9 @@ main(){ # Run on remote
       sudo chown ${i} ${MYHOME}/.ssh/authorized_keys
       sudo chown ${i}:${i} ${MYHOME}/.ssh/authorized_keys
       sudo chmod 600 ${MYHOME}/.ssh/authorized_keys
+
+      add_sudo_user "${_USERNAME}"
+
     fi
   done
 
