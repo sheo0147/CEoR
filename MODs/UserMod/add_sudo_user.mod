@@ -4,7 +4,7 @@
 # Usage:
 # add_sudo_user username
 # RETUEN=`add_sudo_user "username"`
-# Tested on 
+# Tested on CentOS FreeBSD
 #
 # Not POSIX Commands: 
 
@@ -33,11 +33,13 @@ add_sudo_user() {
   case "${_OS}" in
     freebsd)
       _TARGET="/usr/local/etc/sudoers.d"
+      _SUDOERS_FILE="/usr/local/etc/sudoers"
     ;;
     linux)
       case "${_DIST}" in
         centos* | ubuntu)
           _TARGET="/etc/sudoers.d"
+          _SUDOERS_FILE="/etc/sudoers"
         ;;
         *)
           echo "Not Supported Distribution" >&2
@@ -60,7 +62,8 @@ add_sudo_user() {
   _CMD="'${_USERNAME} ALL=(ALL) NOPASSWD: ALL'"
   sudo sh -c "echo ${_CMD} > ${_TARGET}/${_USERNAME}"
   _CMD="'s/^${_USERNAME}/#${_USERNAME}/'"
-  sudo sh -c "sed -i -e ${_CMD} /etc/sudoers"
+  sudo sh -c "sed -i -e ${_CMD} ${_SUDOERS_FILE}"
+
 # unset -x
 
   ##########################################################
