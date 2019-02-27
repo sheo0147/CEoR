@@ -62,6 +62,7 @@ esac
 
 _TMP_CURDIR=${PWD}
 for i in ${_TARGET}; do
+  [ ! -e ${i} ] && continue
   sudo ls ${_LSOPT} ${i} >> ${__TGT_SCRDIR}/ls-lR.txt
   (cd /; sudo find ${i#/} -type f -exec stat ${_STATOPT} "${_STATFMTOPT}" {} \; ) >> ${__TGT_SCRDIR}/stat.txt
   (cd /; sudo find ${i#/} -type f | sudo tar rf ${_TMP_CURDIR}/${__TGT_SCRDIR}/archive.tar -T - )
