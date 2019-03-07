@@ -29,6 +29,8 @@ case "${_OS}" in
     _LSOPT="-lRo"
     _STATOPT="-f"
     _STATFMTOPT="%p %l %Su %u %Sg %g \"%Sf\" %N"
+    _PKG_CMD="/usr/sbin/pkg"
+    _PKG_OPT="info -a"
   ;;
   linux)
     case "${_DIST}" in
@@ -41,6 +43,8 @@ case "${_OS}" in
         else
           _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"
         fi
+        _PKG_CMD="/usr/bin/yum"
+        _PKG_OPT="list installed"
       ;;
       ubuntu)
         _TARGET="/etc"
@@ -51,6 +55,8 @@ case "${_OS}" in
         else
           _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"
         fi
+        _PKG_CMD="/usr/bin/apt"
+        _PKG_OPT="list --installed"
       ;;
     esac
   ;;
@@ -69,6 +75,7 @@ for i in ${_TARGET}; do
 done
 echo "OS=\"${_OS}\""     >> ${__TGT_SCRDIR}/OS-DIST.txt
 echo "DIST=\"${_DIST}\"" >> ${__TGT_SCRDIR}/OS-DIST.txt
+sudo ${_PKG_CMD} ${_PKG_OPT} > ${__TGT_SCRDIR}/PACKAGES.txt
 sudo gzip -9 ${__TGT_SCRDIR}/archive.tar
 }
 
@@ -88,7 +95,6 @@ scp ${__SSH_OPT} -q -rp "${__RUSR}@${__TGT}:${__TGT_SCRDIR}/*" ${__WORKS}
 __PWD__=${PWD}
 cd ${__BAKCONFS}
 
-
 i=`ls -1d ${__TGT}* 2> /dev/null | grep -Ee "${__TGT}-[0-9]{14}$"`
 if [ ! -z ${i} ]; then
   tar czf ${i}.tgz ${i} ${i}-info
@@ -106,9 +112,10 @@ ln -s ${__INFODIR} ${__INFOS}/${__TGT}
 # Extract configuration archives
 tar xzf ${__WORKS}/archive.tar.gz -C ${__CONFDIR}
 rm ${__WORKS}/archive.tar.gz
-mv ${__WORKS}/ls-lR.txt   ${__INFODIR}
-mv ${__WORKS}/stat.txt    ${__INFODIR}
-mv ${__WORKS}/OS-DIST.txt ${__INFODIR}
+mv ${__WORKS}/ls-lR.txt    ${__INFODIR}
+mv ${__WORKS}/stat.txt     ${__INFODIR}
+mv ${__WORKS}/OS-DIST.txt  ${__INFODIR}
+mv ${__WORKS}/PACKAGES.txt ${__INFODIR}
 
 # Source OS Information
 . ${__INFODIR}/OS-DIST.txt
