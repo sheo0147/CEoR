@@ -73,7 +73,7 @@ linux)
 esac
 
 # Check file change and copy
-cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR UID GRP GID FLG FN; do
+cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR FUID GRP FGID FLG FN; do
   SYSFILE=`sudo ${MD5} /${FN}`
   NEWFILE=`sudo ${MD5} confs/${__TGT}/${FN}`
   FLG=`echo ${FLG} | sed -e 's/"\(.*\)"/\1/'`
@@ -86,7 +86,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR UID GRP GID F
       freebsd)
         PER=`echo ${PER} | sed -e 's/..\(.*\)/\1/'`
         sudo chmod ${PER} /${FN}
-        sudo chown ${UID}:${GID} /${FN}
+        sudo chown ${FUID}:${FGID} /${FN}
         if [ ! -z ${FLG} ]; then
           sudo chflags ${FLG} /${FN}
         fi
@@ -106,7 +106,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR UID GRP GID F
         case "${DIST}" in
           centos*)
             sudo chmod ${PER} /${FN}
-            sudo chown ${UID}:${GID} /${FN}
+            sudo chown ${FUID}:${FGID} /${FN}
             if [ ! -z "${FLG}" ]; then
               if [ ! -z "`sudo which restorecon`" ]; then
                 sudo restorecon -F /${FN}
@@ -115,7 +115,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR UID GRP GID F
           ;;
           ubuntu)
             sudo chmod ${PER} /${FN}
-            sudo chown ${UID}:${GID} /${FN}
+            sudo chown ${FUID}:${FGID} /${FN}
             if [ ! -z "${FLG}" ]; then
               if [ ! -z "`sudo which restorecon`" ]; then
                 sudo restorecon -F /${FN}
