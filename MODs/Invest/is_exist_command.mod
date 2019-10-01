@@ -21,7 +21,7 @@ is_exist_command() {
   _CMDNAME=${1}
   _CMD=`which ${_CMDNAME}`
 
-   [ ${DEBUG} ] && echo "DEBUG(is_exist_command) command:${1}" >&2
+  [ ${DEBUG} ] && echo "DEBUG(is_exist_command) command:${1} result:${_CMD}" >&2
   if [ -z "${_CMD}" ]; then
     echo "Warn ${_CMDNAME} is not ${_MSG}"
     return 1
