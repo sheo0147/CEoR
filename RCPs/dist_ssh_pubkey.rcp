@@ -12,7 +12,7 @@
 #     __TARGETCONFS : target user and public key file Directory.
 #     __PUBKEYS     : public key file directory.
 #
-#   ex:
+#   e.g.
 #     cat ${__TARGETCONFS}/${__TGT}.sh
 #       ######### user            public_key_file
 #       _KEYLIST="
@@ -22,7 +22,7 @@
 #     ls ${__PUBKEYS}
 #       user001_publik_key_file  user002_publik_key_file
 #
-#   test:
+#   test.
 #         host:   mac osx 10.13.6
 #         remote: centos  7.4.1708
 #                 FreeBSD 11.1
@@ -101,14 +101,15 @@ main(){ # Run on remote
         # echo "${MYHOME}"
       [ ! -d ${MYHOME} ] && echo "user dir ${i} is not found. Error exit." && exit 1
       [ ! -d ${MYHOME}/.ssh ] && sudo mkdir -p ${MYHOME}/.ssh
-      [ -f ${MYHOME}/.ssh/authorized_keys ] && sudo cp -p ${MYHOME}/.ssh/authorized_keys ${MYHOME}/.ssh/authorized_keys.${_DATE}
+      # [ -f ${MYHOME}/.ssh/authorized_keys ] && sudo cp -p ${MYHOME}/.ssh/authorized_keys ${MYHOME}/.ssh/authorized_keys.${_DATE}
+      sudo cp -p ${MYHOME}/.ssh/authorized_keys ${MYHOME}/.ssh/authorized_keys.${_DATE}
       sudo chown ${i} ${MYHOME}/.ssh
       sudo chown ${i}:${i} ${MYHOME}/.ssh
       sudo chmod 700 ${MYHOME}/.ssh
       sudo cp ${i} ${MYHOME}/.ssh/authorized_keys
-      sudo chown ${i} ${MYHOME}/.ssh/authorized_keys*
-      sudo chown ${i}:${i} ${MYHOME}/.ssh/authorized_keys*
-      sudo chmod 600 ${MYHOME}/.ssh/authorized_keys*
+      sudo chown ${i} ${MYHOME}/.ssh/authorized_keys
+      sudo chown ${i}:${i} ${MYHOME}/.ssh/authorized_keys
+      sudo chmod 600 ${MYHOME}/.ssh/authorized_keys
 
       add_sudo_user "${_USERNAME}"
 
