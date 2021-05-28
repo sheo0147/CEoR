@@ -57,7 +57,7 @@ parse_conf() {			# parse configuration files.
        continue
     fi
     while read -r j; do
-      L=$(echo "${j%%#*}" | sed -e 's/^[:space:]*$//')  # Remove comment line.
+      L=$(echo "${j%%#*}" | sed -e 's/^[[:space:]]*$//')  # Remove comment line.
       [ -z "${L}" ] && continue
 
       [ -z "${M}" ] && [ ${L%%[^\[]*} != '[' ] && echo "parse_conf: Error! : Syntax is error in ${i}/${__CONFFILE}" && exit 1
@@ -220,7 +220,7 @@ for __i in ${MODULE}; do
   if [ -d ${__i} ]; then
     for __j in $(find ${__i} -type f -name '*.mod'); do
       echo "##### from ${__j}" >> ${__TMPDIR}/module.sh
-      cat ${__j} | sed -e '/^[:space:]*#/d' >> ${__TMPDIR}/module.sh
+      cat ${__j} | sed -e '/^[[:space:]]*#/d' >> ${__TMPDIR}/module.sh
     done
   fi
 done
@@ -247,7 +247,7 @@ __END__
   #----- Exec prepare() -----
   echo "#!/bin/sh" > ${__TMPDIR}/local.sh
   cat ${__TMPDIR}/module.sh >> ${__TMPDIR}/local.sh
-  cat ${__TMPDIR}/recipe.sh | sed -e '/^[:space:]*#/d' >> ${__TMPDIR}/local.sh
+  cat ${__TMPDIR}/recipe.sh | sed -e '/^[[:space:]]*#/d' >> ${__TMPDIR}/local.sh
   /bin/sh ${__TMPDIR}/local.sh prepare
   [ ${?} -ne 0 ] && echo "Error in prepare. Exit" && exit
 
