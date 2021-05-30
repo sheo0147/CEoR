@@ -43,6 +43,11 @@
 ##############################################################################
 # Functions.
 ##############################################################################
+echo () {
+  # Overwrite built-in echo so that it can't takes any options/operands
+  printf "%s\n" "$*"
+}
+##############################################################################
 parse_conf() {			# parse configuration files.
 
   # Define Variables.
