@@ -19,7 +19,7 @@ is_exist_command() {
   fi
   _MSG="exist"
   _CMDNAME=${1}
-  _CMD=`which ${_CMDNAME}`
+  _CMD=`command -v ${_CMDNAME}`
 
   [ ${DEBUG} ] && echo "DEBUG(is_exist_command) command:${1} result:${_CMD}" >&2
   if [ -z "${_CMD}" ]; then

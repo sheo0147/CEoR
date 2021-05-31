@@ -217,7 +217,7 @@ __EXPORT_ENV_NAME="${__EXPORT_ENV_NAME} __TMPDIR"
 #####
 
 cat << "__END__" >> ${__TMPDIR}/module.sh
-__SUDO=`which sudo`
+__SUDO=`command -v sudo`
 [ -z "${__SUDO}" ] && echo "Do not have sudo!. exit" && exit 1
 __END__
 

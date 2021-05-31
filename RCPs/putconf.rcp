@@ -108,7 +108,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR FUID GRP FGID
             sudo chmod ${PER} /${FN}
             sudo chown ${FUID}:${FGID} /${FN}
             if [ ! -z "${FLG}" ]; then
-              if [ ! -z "`sudo which restorecon`" ]; then
+              if [ ! -z "`sudo command -v restorecon`" ]; then
                 sudo restorecon -F /${FN}
               fi 
             fi
@@ -117,7 +117,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR FUID GRP FGID
             sudo chmod ${PER} /${FN}
             sudo chown ${FUID}:${FGID} /${FN}
             if [ ! -z "${FLG}" ]; then
-              if [ ! -z "`sudo which restorecon`" ]; then
+              if [ ! -z "`sudo command -v restorecon`" ]; then
                 sudo restorecon -F /${FN}
               fi 
             fi 

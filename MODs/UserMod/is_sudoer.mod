@@ -13,7 +13,7 @@
 # Not POSIX Commands: 
 # 
 is_sudoer() {
- local SUDO=`which sudo`
+ local SUDO=`command -v sudo`
  [ ${DEBUG} ] && echo "DEBUG(is_sudoer) sudo=${SUDO}" >&2
  [ -z ${SUDO} ] && echo >&2 "Error: sudo is not exist" && return 1
 

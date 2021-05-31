@@ -38,7 +38,7 @@ case "${_OS}" in
         _TARGET="/etc"
         _LSOPT="-lR"
         _STATOPT="--format"
-        if [ -z "`sudo which restorecon`" ]; then
+        if [ -z "`sudo command -v restorecon`" ]; then
           _STATFMTOPT="%a %h %U %u %G %g \"\" %n"
         else
           _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"
@@ -50,7 +50,7 @@ case "${_OS}" in
         _TARGET="/etc"
         _LSOPT="-lR"
         _STATOPT="--format"
-        if [ -z "`sudo which restorecon`" ]; then
+        if [ -z "`sudo command -v restorecon`" ]; then
           _STATFMTOPT="%a %h %U %u %G %g \"\" %n"
         else
           _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"

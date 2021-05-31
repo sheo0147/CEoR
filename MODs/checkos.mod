@@ -13,7 +13,7 @@
 # Tested on FreeBSD/CentOS/Ubuntu/OS-X
 
 checkos() {
-  local _UNAME=`which uname`
+  local _UNAME=`command -v uname`
 
   [ ${DEBUG} ] && echo "_UNAME=${_UNAME}" >&2
 
