@@ -212,10 +212,8 @@ __EXPORT_ENV_NAME="${__EXPORT_ENV_NAME} __TMPDIR"
 #####
 
 cat << "__END__" >> ${__TMPDIR}/module.sh
-if ! command -v sudo >/dev/null 2>&1; then
-  echo "Do not have sudo!. exit"
-  exit 1
-fi
+__SUDO=`command -v sudo`
+[ -z "${__SUDO}" ] && echo "Do not have sudo!. exit" && exit 1
 __END__
 
 for __i in ${MODULE}; do
