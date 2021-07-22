@@ -5,20 +5,20 @@ ssh接続用公開鍵の配布。
 
 ## Reqirement
 
-[CEoR](https://github.com/sheo0147/CEoR)を利用しています。
+[CEoR](https://github.com/sheo0147/CEoR)を利用しています。
 
-[CEoR](https://github.com/sheo0147/CEoR)のRCPとして実装しています。
+[CEoR](https://github.com/sheo0147/CEoR)のRCPとして実装しています。
 
 ## 注意点
 
 - sudoが存在していることを想定しています。
 - 作業ユーザにsudo権限があることを想定しています。
-- 公開鍵は`/home/user/.ss/authorized_key`に配置されます。
-- `/home/user/.ss/authorized_key`は再作成されますので、設定にない鍵は全て**削除**されます(**追加**でありません)
+- 公開鍵は`/home/user/.ssh/authorized_key`に配置されます。
+- `/home/user/.ssh/authorized_key`は再作成されますので、設定にない鍵は全て**削除**されます(**追加**でありません)
 
 ## 事前準備
 
-[CEoR](https://github.com/sheo0147/CEoR)本体については割愛。
+[CEoR](https://github.com/sheo0147/CEoR)本体については割愛。
 
 ### 作業ディレクトリの作成
 
@@ -51,7 +51,7 @@ __KEYARCHS    : archives
 
 ### 配布先のリスト作成
 
-配布先のリストを作成します。  
+配布先のリストを作成します。
 `${ALL_TARGET}`という名称の変数に格納してください。
 
 #### nodelist.sh
