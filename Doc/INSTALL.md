@@ -1,4 +1,4 @@
-# Installation 
+# Installation
 
 Now work in progress.
 
@@ -11,15 +11,23 @@ CEoR needs following environment.
 
 ## How to Install
 
+* make working directory
+  ```
+  $ mkdir some/where/work_dir_CEoR
+  $ cd some/where/work_dir_CEoR
+  ```
 * Get CEoR from github
+  ```
+  git clone https://github.com/sheo0147/CEoR.git
+  ```
 * Run followings
-```
-$ cd some/where/CEoR
-$ sudo sh bin/instceor.sh
-$ sh bin/mkceordir.sh
-$ cd your/project/dir
-$ sh bin/mkceorprjdir.sh
-```
+  ```
+  $ cd some/where/work_dir_CEoR/CEoR
+  $ sudo sh bin/instceor.sh
+  $ sh bin/mkceordir.sh
+  $ cd your/project/dir
+  $ sh some/where/work_dir_CEoR/CEoR/bin/mkceorprjdir.sh
+  ```
 
 * Check directories.
   * CEoR distribution file is put under `/usr/local/CEoR`

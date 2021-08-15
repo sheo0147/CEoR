@@ -1,4 +1,4 @@
-# インストール 
+# インストール
 
 まだ、作業中です。
 
@@ -15,15 +15,24 @@ CEoR が必要とする環境。
 
 ## インストールの手順
 
+* 作業用ディレクトリを作成します
+  ```
+  $ mkdir some/where/work_dir_CEoR
+  $ cd some/where/work_dir_CEoR
+  ```
 * CEoRをgithubから取得します。
+  ```
+  git clone https://github.com/sheo0147/CEoR.git
+  ```
+
 * 以下のコマンドを実行します。
-```
-$ cd some/where/CEoR
-$ sudo sh bin/instceor.sh
-$ sh bin/mkceordir.sh
-$ cd your/project/dir
-$ sh bin/mkceorprjdir.sh
-```
+  ```
+  $ cd some/where/work_dir_CEoR/CEoR
+  $ sudo sh bin/instceor.sh
+  $ sh bin/mkceordir.sh
+  $ cd your/project/dir
+  $ sh some/where/work_dir_CEoR/CEoR/bin/mkceorprjdir.sh
+  ```
 
 * 以下のディレクトリが作成されていることをチェックしてください。
   * `/usr/local/CEoR`：CEoRの本体が格納されています
