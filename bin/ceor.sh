@@ -156,19 +156,25 @@ check_file_in_path_env(){	# check file exist in ENVNAME path
 ####### MAIN ROUTINE...
 ##############################################################################
 
+# Initialize EnvVal
+__LOCALRUN=0
+
 # Parse arguments.
-while getopts d:f:h:u: __FLAG; do
+while getopts d:f:h:lu: __FLAG; do
   case "${__FLAG}" in
-  d)
+  d) # Config Dirs
     __CONFDIR="${OPTARG}"
   ;;
-  f)
+  f) # RCP Filename
     __CONFFILE="${OPTARG}"
   ;;
-  h)
+  h) # Target node
     __TGT="${OPTARG}"
   ;;
-  u)
+  l) # Run locally
+    __LOCALRUN=1
+  ;;
+  u) # Run by user
     __RUSR="${OPTARG}"
   ;;
   *)
@@ -263,8 +269,12 @@ __END__
   echo "__TGT=${__TGT}" >> ${__TMPDIR}/remote.sh
   # Generate script
   cat ${__TMPDIR}/local.sh >> ${__TMPDIR}/remote.sh
+if [ ${__LOCALRUN} -eq 0 ]; then
   scp ${__SSH_OPT} -q -rp ${__TMPDIR}/remote.sh "${__RUSR}@${__TGT}:${__TGT_SCRDIR}"
   ssh ${__SSH_OPT} -q ${__RUSR_OPT} -t "${__TGT}" "/bin/sh ${__TGT_SCRDIR}/remote.sh main"
+else
+  sudo -u ${__RUSR} -i /bin/sh ${__TMPDIR}/remote.sh main
+fi
   __ERROR=${?}
   rm ${__TMPDIR}/remote.sh
   ssh ${__SSH_OPT} -q ${__RUSR_OPT} -t "${__TGT}" "rm ${__TGT_SCRDIR}/remote.sh"
