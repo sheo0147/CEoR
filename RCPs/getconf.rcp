@@ -25,7 +25,7 @@ _DIST=`checkos -d | tr [:upper:] [:lower:]`
 
 case "${_OS}" in
   freebsd)
-    _TARGET="/etc /usr/local/etc /boot/loader.conf"
+    _TARGET="/etc /usr/local/etc /boot/loader.conf*"
     _LSOPT="-lRo"
     _STATOPT="-f"
     _STATFMTOPT="%p %l %Su %u %Sg %g \"%Sf\" %N"
