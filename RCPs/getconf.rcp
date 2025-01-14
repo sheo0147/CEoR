@@ -34,15 +34,11 @@ case "${_OS}" in
   ;;
   linux)
     case "${_DIST}" in
-      centos*)
+      centos*|almalinux*)
         _TARGET="/etc"
         _LSOPT="-lR"
         _STATOPT="--format"
-        if [ -z "`sudo command -v restorecon`" ]; then
-          _STATFMTOPT="%a %h %U %u %G %g \"\" %n"
-        else
-          _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"
-        fi
+        _STATFMTOPT="%a %h %U %u %G %g"
         _PKG_CMD="/usr/bin/yum"
         _PKG_OPT="list installed"
       ;;
@@ -50,11 +46,7 @@ case "${_OS}" in
         _TARGET="/etc"
         _LSOPT="-lR"
         _STATOPT="--format"
-        if [ -z "`sudo command -v restorecon`" ]; then
-          _STATFMTOPT="%a %h %U %u %G %g \"\" %n"
-        else
-          _STATFMTOPT="%a %h %U %u %G %g \"%C\" %n"
-        fi
+        _STATFMTOPT="%a %h %U %u %G %g"
         _PKG_CMD="/usr/bin/apt"
         _PKG_OPT="list --installed"
       ;;
@@ -70,7 +62,18 @@ _TMP_CURDIR=${PWD}
 for i in ${_TARGET}; do
   [ ! -e ${i} ] && continue
   sudo ls ${_LSOPT} ${i} >> ${__TGT_SCRDIR}/ls-lR.txt
-  (cd /; sudo find ${i#/} -type f -exec stat ${_STATOPT} "${_STATFMTOPT}" {} \; ) >> ${__TGT_SCRDIR}/stat.txt
+  if [ ${_OS} = "linux" ]; then
+    (cd /; sudo find ${i#/} -type f | while read file; do
+      if [ "${_OS}" = "linux" ]; then
+        context=$(sudo stat --format="%C" "$file" 2>/dev/null)
+        [ $? -ne 0 ] && context=""
+      fi
+      info=$(sudo stat ${_STATOPT} "${_STATFMTOPT}" "$file")
+      echo "$info \"$context\" $file"
+      done) >> ${__TGT_SCRDIR}/stat.txt
+  else
+    (cd /; sudo find ${i#/} -type f -exec stat ${_STATOPT} "${_STATFMTOPT}" {} \; ) >> ${__TGT_SCRDIR}/stat.txt
+  fi
   (cd /; sudo find ${i#/} -type f | sudo tar rf ${_TMP_CURDIR}/${__TGT_SCRDIR}/archive.tar -T - )
 done
 echo "OS=\"${_OS}\""     >> ${__TGT_SCRDIR}/OS-DIST.txt
@@ -130,7 +133,7 @@ case "${OS}" in
   ;;
   linux)
     case "${DIST}" in
-      centos*)
+      centos*|almalinux*)
         chmod 600 ${__CONFDIR}/etc/shadow
         chmod 600 ${__CONFDIR}/etc/shadow-
         chmod 600 ${__CONFDIR}/etc/gshadow
