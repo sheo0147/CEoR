@@ -23,7 +23,7 @@ case "${OS}" in
 freebsd) ;;
 linux)
   case "${DIST}" in
-  centos*) ;;
+  centos*|almalinux*) ;;
   ubuntu) ;;
   esac
 ;;
@@ -54,7 +54,7 @@ freebsd)
 ;;
 linux)
   case "${DIST}" in
-  centos*)
+  centos*|almalinux*)
     MD5="openssl md5"
     chmod 000 `basename ${CONFS}`/${__TGT}/etc/shadow
     chmod 000 `basename ${CONFS}`/${__TGT}/etc/shadow-
@@ -104,7 +104,7 @@ cat `basename ${INFOS}`/${__TGT}/stat.txt | while read PER HLN USR FUID GRP FGID
       ;;
       linux)
         case "${DIST}" in
-          centos*)
+          centos*|almalinux*)
             sudo chmod ${PER} /${FN}
             sudo chown ${FUID}:${FGID} /${FN}
             if [ ! -z "${FLG}" ]; then
