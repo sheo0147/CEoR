@@ -112,12 +112,13 @@ parse_conf() {			# parse configuration files.
 
   # Overwrite OTHER ENV
   for i in ${__CONFENV_O}; do
-    T="" j=${S}
+    T="" TT="" j=${S}
     until [ ${j} -le 1 ]; do
       j=$(( ${j} - 1 ))
-      T="$(eval echo '${'$(eval echo ${i}_${j})'}')"
-      [ -z "${T}" ] && continue
+      TT="$(eval echo '${'$(eval echo ${i}_${j})'}')"
+      [ -z "${TT}" ] && continue
       unset "$(eval echo ${i}_${j})"
+      T=${TT}
     done
     T=$(echo "${T}" | sed 's/::*/:/g;s/^://;s/:$//' | tr ":" " ")
     # uniq values without sort
